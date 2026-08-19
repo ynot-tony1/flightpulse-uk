@@ -1,13 +1,18 @@
-import { getOverviewSummary } from "@/lib/data/overview";
+import {
+  getMetricTrend,
+  getOverviewSummary,
+  getPunctualityTrend,
+  getTopAirportsByMetric,
+  getTrafficSplit,
+} from "@/lib/data/overview";
 import { MetricCard } from "@/components/charts/metric-card";
 import { ChartCard } from "@/components/charts/chart-card";
+import { TrendLineChart } from "@/components/charts/trend-line-chart";
+import { RankingBarChart } from "@/components/charts/ranking-bar-chart";
 import { DatabasePendingNotice } from "@/components/ui/database-pending-notice";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Badge } from "@/components/ui/badge";
-import {
-  formatCompactNumber,
-  formatMonthYear,
-  formatPercentage,
-} from "@flightpulse/shared";
+import { formatCompactNumber, formatMonthYear, formatPercentage } from "@flightpulse/shared";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -17,13 +22,20 @@ export default async function HomePage() {
   const summary = overview.status === "ok" ? overview.data : null;
   const period = summary?.latestPeriod ?? null;
 
+  const [passengerTrend, movementTrend, delayTrend, onTimeTrend, trafficSplit, topAirports] = await Promise.all([
+    getMetricTrend("terminal_passengers"),
+    getMetricTrend("aircraft_movements_total"),
+    getPunctualityTrend("averageDelayMinutes"),
+    getPunctualityTrend("onTimePercentage"),
+    getTrafficSplit(),
+    getTopAirportsByMetric("terminal_passengers", 8),
+  ]);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <section className="flex flex-col gap-4 border-b border-border pb-10">
         <Badge tone="sky">
-          {period
-            ? `Latest period: ${formatMonthYear(period.year, period.month)}`
-            : "Awaiting first CAA import"}
+          {period ? `Latest period: ${formatMonthYear(period.year, period.month)}` : "Awaiting first CAA import"}
         </Badge>
         <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
           UK aviation, measured from official statistics.
@@ -52,58 +64,31 @@ export default async function HomePage() {
       <section className="grid grid-cols-2 gap-4 py-8 sm:grid-cols-4">
         <MetricCard
           label="Passengers"
-          value={
-            summary?.totalPassengers
-              ? formatCompactNumber(summary.totalPassengers)
-              : "—"
-          }
+          value={summary?.totalPassengers ? formatCompactNumber(summary.totalPassengers) : "—"}
         />
         <MetricCard
           label="Aircraft movements"
-          value={
-            summary?.totalMovements
-              ? formatCompactNumber(summary.totalMovements)
-              : "—"
-          }
+          value={summary?.totalMovements ? formatCompactNumber(summary.totalMovements) : "—"}
         />
-        <MetricCard
-          label="Routes represented"
-          value={
-            summary?.routeCount ? formatCompactNumber(summary.routeCount) : "—"
-          }
-        />
+        <MetricCard label="Routes represented" value={summary?.routeCount ? formatCompactNumber(summary.routeCount) : "—"} />
         <MetricCard
           label="Airports represented"
-          value={
-            summary?.airportCount
-              ? formatCompactNumber(summary.airportCount)
-              : "—"
-          }
+          value={summary?.airportCount ? formatCompactNumber(summary.airportCount) : "—"}
         />
         <MetricCard
           label="Average delay"
-          value={
-            summary?.averageDelayMinutes != null
-              ? summary.averageDelayMinutes.toFixed(1)
-              : "—"
-          }
+          value={summary?.averageDelayMinutes != null ? summary.averageDelayMinutes.toFixed(1) : "—"}
           unit="min"
         />
         <MetricCard
           label="On-time performance"
-          value={
-            summary?.onTimePercentage != null
-              ? formatPercentage(summary.onTimePercentage)
-              : "—"
-          }
+          value={summary?.onTimePercentage != null ? formatPercentage(summary.onTimePercentage) : "—"}
         />
         <MetricCard
           label="Latest CAA update"
           value={
             summary?.latestUpdatePublicationDate
-              ? new Date(
-                  summary.latestUpdatePublicationDate,
-                ).toLocaleDateString("en-GB")
+              ? new Date(summary.latestUpdatePublicationDate).toLocaleDateString("en-GB")
               : "—"
           }
         />
@@ -117,47 +102,53 @@ export default async function HomePage() {
       )}
 
       <section className="grid grid-cols-1 gap-6 pb-16 lg:grid-cols-2">
-        <ChartCard
-          title="UK passenger trend"
-          description="Monthly terminal passengers, all reporting airports."
-          period={period ?? undefined}
-        >
-          <DatabasePendingNotice subject="This chart" />
+        <ChartCard title="UK passenger trend" description="Monthly terminal passengers, all reporting airports." period={period ?? undefined}>
+          {passengerTrend.status === "ok" && passengerTrend.data.length > 0 ? (
+            <TrendLineChart data={passengerTrend.data} valueLabel="Passengers" />
+          ) : (
+            <DatabasePendingNotice subject="This chart" />
+          )}
         </ChartCard>
-        <ChartCard
-          title="Aircraft movement trend"
-          description="Monthly aircraft movements, all reporting airports."
-          period={period ?? undefined}
-        >
-          <DatabasePendingNotice subject="This chart" />
+        <ChartCard title="Aircraft movement trend" description="Monthly aircraft movements, all reporting airports." period={period ?? undefined}>
+          {movementTrend.status === "ok" && movementTrend.data.length > 0 ? (
+            <TrendLineChart data={movementTrend.data} valueLabel="Movements" />
+          ) : (
+            <DatabasePendingNotice subject="This chart" />
+          )}
         </ChartCard>
-        <ChartCard
-          title="Average delay trend"
-          description="Flight-weighted average delay across monitored airports."
-          period={period ?? undefined}
-        >
-          <DatabasePendingNotice subject="This chart" />
+        <ChartCard title="Average delay trend" description="Flight-weighted average delay across monitored airports." period={period ?? undefined}>
+          {delayTrend.status === "ok" && delayTrend.data.length > 0 ? (
+            <TrendLineChart data={delayTrend.data} valueLabel="Minutes" />
+          ) : (
+            <EmptyState title="No punctuality data for this period" description="CAA punctuality statistics cover selected monitored airports only." />
+          )}
         </ChartCard>
-        <ChartCard
-          title="On-time performance trend"
-          description="Share of matched flights within 15 minutes of schedule."
-          period={period ?? undefined}
-        >
-          <DatabasePendingNotice subject="This chart" />
+        <ChartCard title="On-time performance trend" description="Share of matched flights within 15 minutes of schedule." period={period ?? undefined}>
+          {onTimeTrend.status === "ok" && onTimeTrend.data.length > 0 ? (
+            <TrendLineChart data={onTimeTrend.data} valueLabel="% on time" />
+          ) : (
+            <EmptyState title="No punctuality data for this period" description="CAA punctuality statistics cover selected monitored airports only." />
+          )}
         </ChartCard>
-        <ChartCard
-          title="Domestic vs international passengers"
-          description="Split of terminal passenger traffic by route type."
-          period={period ?? undefined}
-        >
-          <DatabasePendingNotice subject="This chart" />
+        <ChartCard title="Domestic vs international passengers" description="Split of terminal passenger traffic by route type." period={period ?? undefined}>
+          {trafficSplit.status === "ok" && trafficSplit.data ? (
+            <RankingBarChart
+              data={[
+                { label: "Domestic", value: trafficSplit.data.domestic },
+                { label: "International", value: trafficSplit.data.international },
+              ]}
+              valueLabel="Passengers"
+            />
+          ) : (
+            <DatabasePendingNotice subject="This chart" />
+          )}
         </ChartCard>
-        <ChartCard
-          title="Top UK airports by passengers"
-          description="Ranked by latest monthly terminal passengers."
-          period={period ?? undefined}
-        >
-          <DatabasePendingNotice subject="This chart" />
+        <ChartCard title="Top UK airports by passengers" description="Ranked by latest monthly terminal passengers." period={period ?? undefined}>
+          {topAirports.status === "ok" && topAirports.data.length > 0 ? (
+            <RankingBarChart data={topAirports.data} valueLabel="Passengers" />
+          ) : (
+            <DatabasePendingNotice subject="This chart" />
+          )}
         </ChartCard>
       </section>
     </div>

@@ -25,7 +25,8 @@ export function RankingBarChart({
 }) {
   return (
     <div
-      className="h-72 w-full"
+      className="w-full"
+      style={{ height: Math.max(288, data.length * 44) }}
       role="img"
       aria-label={`Bar chart ranking by ${valueLabel}`}
     >
@@ -52,10 +53,11 @@ export function RankingBarChart({
             type="category"
             dataKey="label"
             stroke="var(--color-ink-faint)"
-            fontSize={12}
+            fontSize={11}
             tickLine={false}
             axisLine={false}
-            width={110}
+            width={140}
+            interval={0}
           />
           <Tooltip
             formatter={(value: number) => [

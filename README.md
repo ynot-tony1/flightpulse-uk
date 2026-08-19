@@ -141,11 +141,18 @@ Vercel (read-only `flight_app` connection); `INGEST_DATABASE_URL` and
 [`docs/deployment.md#database-setup-completed`](docs/deployment.md#database-setup-completed)
 for the exact grants and how to apply future schema changes.
 
-No historical CAA data has been imported yet — that's the next step (see
-[`docs/ingestion.md`](docs/ingestion.md) and the calibration-import note in
-[`docs/deployment.md`](docs/deployment.md)). Until an import runs, pages
-show the database as connected but with zero records — never fabricated
-figures.
+**A real calibration import has run.** As of 2026-08-20, the database holds:
+20 UK airports (OurAirports reference data), December 2025 airport statistics
+(199 metric rows, 56 domestic/international routes), January 2026
+punctuality (20 airport-level records), and April 2026 airline statistics
+(22 records). These are real, verified CAA figures, not placeholders — e.g.
+Manchester's December 2025 terminal passengers (2,367,746) is exactly what
+the CAA published for that period. Multi-year historical backfill has not
+run yet — that's the next step (see [`docs/ingestion.md`](docs/ingestion.md)
+and the calibration note in [`docs/deployment.md`](docs/deployment.md));
+pages for periods
+without imported data show an explicit empty state, never a fabricated
+figure.
 
 ## Testing
 

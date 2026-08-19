@@ -49,3 +49,4 @@ Check the request actually includes a route-count cap
 (`config/map-config.yml` → `routes.default_count`, hard max via
 `MAP_MAX_ROUTES`) — the API must never return the unfiltered full
 historical route set (section 51 of the build brief).
+test: verify Vercel GitHub auto-deploy

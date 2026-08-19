@@ -1,0 +1,51 @@
+name: Migrate production database
+
+# Manual only — never scheduled, never triggered by a push. Uses
+# `prisma migrate deploy` (applies committed migrations); never
+# `migrate reset`, which would destroy production data (section 78).
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "migrate" to confirm you intend to apply migrations to production'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migrate-production
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: inputs.confirm == 'migrate'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.18.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check migration status
+        working-directory: packages/database
+        env:
+          DATABASE_URL: ${{ secrets.MIGRATION_DATABASE_URL }}
+        run: pnpm exec prisma migrate status
+
+      - name: Apply migrations
+        working-directory: packages/database
+        env:
+          DATABASE_URL: ${{ secrets.MIGRATION_DATABASE_URL }}
+        run: pnpm exec prisma migrate deploy

@@ -1,0 +1,46 @@
+name: Refresh airport reference
+
+# OurAirports changes more often than CAA statistics but doesn't need daily
+# refreshing — see docs/ingestion.md and section 77 of the build brief.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Fetch and report only, no database writes"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 5 1 * *" # monthly
+
+permissions:
+  contents: read
+
+concurrency:
+  group: refresh-airport-reference
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: vars.INGESTION_ENABLED == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ingestion image
+        run: docker build -t flightpulse-ingestor:run -f services/ingestor/Dockerfile .
+
+      - name: Refresh reference data
+        env:
+          INGEST_DATABASE_URL: ${{ secrets.INGEST_DATABASE_URL }}
+        run: |
+          set -e
+          ARGS=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="--dry-run"; fi
+          docker run --rm -e INGEST_DATABASE_URL flightpulse-ingestor:run refresh-airport-reference $ARGS \
+            | tee /tmp/refresh-summary.txt
+          echo "## Airport reference refresh — $(date -u +%Y-%m-%d)" >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/refresh-summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Reviewed CAA airport mappings (config/airport-aliases.yml) are never overwritten automatically by this workflow._" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,37 @@
+name: Rebuild analytics
+
+# Recomputes AggregateMetric rows used by the dashboard/rankings pages.
+# Normally triggered automatically at the end of an ingestion workflow;
+# exposed here too so it can be re-run on its own (e.g. after a
+# methodology fix that doesn't require reimporting source files).
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rebuild-analytics
+  cancel-in-progress: true
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: vars.INGESTION_ENABLED == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ingestion image
+        run: docker build -t flightpulse-ingestor:run -f services/ingestor/Dockerfile .
+
+      - name: Refresh aggregate metrics
+        env:
+          INGEST_DATABASE_URL: ${{ secrets.INGEST_DATABASE_URL }}
+        run: |
+          docker run --rm -e INGEST_DATABASE_URL flightpulse-ingestor:run refresh-metrics \
+            | tee /tmp/rebuild-summary.txt
+          echo "## Analytics rebuild — $(date -u +%Y-%m-%d)" >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/rebuild-summary.txt >> "$GITHUB_STEP_SUMMARY"

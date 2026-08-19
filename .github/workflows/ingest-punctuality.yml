@@ -1,0 +1,72 @@
+name: Ingest punctuality statistics
+
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: "Year (e.g. 2026)"
+        required: true
+      month:
+        description: "Month (1-12)"
+        required: true
+      force_import:
+        description: "Reimport even if checksum unchanged"
+        type: boolean
+        default: false
+      sample_rows:
+        description: "Limit rows processed (0 = no limit)"
+        default: "0"
+      dry_run:
+        description: "Parse and validate only, no database writes"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "30 8 17 * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ingest-punctuality
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: vars.INGESTION_ENABLED == 'true' && vars.PUNCTUALITY_STATS_ENABLED == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ingestion image
+        run: docker build -t flightpulse-ingestor:run -f services/ingestor/Dockerfile .
+
+      - name: Resolve period
+        id: period
+        run: |
+          if [ -n "${{ inputs.year }}" ]; then
+            echo "year=${{ inputs.year }}" >> "$GITHUB_OUTPUT"
+            echo "month=${{ inputs.month }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "year=$(date +%Y)" >> "$GITHUB_OUTPUT"
+            echo "month=$(date +%-m)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run import
+        env:
+          INGEST_DATABASE_URL: ${{ secrets.INGEST_DATABASE_URL }}
+        run: |
+          set -e
+          ARGS="--year ${{ steps.period.outputs.year }} --month ${{ steps.period.outputs.month }}"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          docker run --rm \
+            -e INGEST_DATABASE_URL \
+            -e PUNCTUALITY_STATS_ENABLED=true \
+            flightpulse-ingestor:run import-punctuality $ARGS \
+            | tee /tmp/import-summary.json
+          echo "## Punctuality import — ${{ steps.period.outputs.year }}-${{ steps.period.outputs.month }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/import-summary.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Coverage note: punctuality statistics cover only CAA-monitored airports — a low record count for a period may be correct, not an error._" >> "$GITHUB_STEP_SUMMARY"

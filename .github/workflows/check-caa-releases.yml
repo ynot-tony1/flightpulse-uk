@@ -1,0 +1,51 @@
+name: Check CAA releases
+
+# Lightweight, source-driven discovery check. Per docs/ingestion.md, this
+# never assumes "current month - 1" is published — it asks the CAA site
+# directly and exits successfully with no further action if nothing new is
+# found. It does NOT write to the database itself; a real new/revised
+# publication should be followed up with the relevant import workflow
+# (workflow_dispatch), reviewed via the run summary below.
+
+on:
+  schedule:
+    - cron: "17 6 * * *" # daily, lightweight page checks only
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-caa-releases
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    if: vars.INGESTION_ENABLED == 'true'
+    defaults:
+      run:
+        working-directory: services/ingestor
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ingestor
+        run: pip install -e .
+
+      - name: Discover current period for each family
+        run: |
+          YEAR=$(date +%Y)
+          MONTH=$(date +%-m)
+          echo "## CAA release discovery — $(date -u +%Y-%m-%d)" >> "$GITHUB_STEP_SUMMARY"
+          for FAMILY in airports airlines; do
+            echo "### $FAMILY ($YEAR-$MONTH)" >> "$GITHUB_STEP_SUMMARY"
+            ingestor discover "$FAMILY" --year "$YEAR" --month "$MONTH" >> "$GITHUB_STEP_SUMMARY" 2>&1 || true
+          done
+          echo "### punctuality ($YEAR)" >> "$GITHUB_STEP_SUMMARY"
+          ingestor discover punctuality --year "$YEAR" --month "$MONTH" >> "$GITHUB_STEP_SUMMARY" 2>&1 || true
+        env:
+          LOG_LEVEL: WARNING

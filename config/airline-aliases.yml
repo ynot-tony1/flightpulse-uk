@@ -1,5 +1,10 @@
 # Reviewed CAA airline-name -> canonical-airline mappings (section 28).
 # Airline names are not auto-joined; every mapping here has been reviewed.
+#
+# caa_name values confirmed against a live April 2026 CAA Table 03 file on
+# 2026-08-19 — CAA's operator names use "LTD" (not "LIMITED"), and some
+# airlines report under a UK-specific operating subsidiary distinct from
+# the parent brand name.
 
 aliases:
   - caa_name: "BRITISH AIRWAYS PLC"
@@ -7,35 +12,43 @@ aliases:
     iata: "BA"
     icao: "BAW"
     reviewed: true
-  - caa_name: "EASYJET AIRLINE COMPANY LIMITED"
+  - caa_name: "EASYJET UK LTD"
     canonical_name: "easyJet"
     iata: "U2"
     icao: "EZY"
     reviewed: true
-  - caa_name: "RYANAIR DAC"
+  - caa_name: "RYANAIR UK LTD"
     canonical_name: "Ryanair"
     iata: "FR"
     icao: "RYR"
     reviewed: true
-  - caa_name: "VIRGIN ATLANTIC AIRWAYS LIMITED"
+  - caa_name: "VIRGIN ATLANTIC AIRWAYS LTD"
     canonical_name: "Virgin Atlantic"
     iata: "VS"
     icao: "VIR"
     reviewed: true
-  - caa_name: "JET2.COM LIMITED"
+  - caa_name: "JET2.COM LTD"
     canonical_name: "Jet2.com"
     iata: "LS"
     icao: "EXS"
     reviewed: true
-  - caa_name: "TUI AIRWAYS LIMITED"
+  - caa_name: "TUI AIRWAYS LTD"
     canonical_name: "TUI Airways"
     iata: "BY"
     icao: "TOM"
     reviewed: true
-  - caa_name: "LOGANAIR LIMITED"
+  - caa_name: "LOGANAIR LTD"
     canonical_name: "Loganair"
     iata: "LM"
     icao: "LOG"
     reviewed: true
 
-unresolved: []
+# Genuinely distinct operating subsidiaries seen in real CAA data — left
+# unresolved rather than guessed onto the parent brand (section 28: never
+# auto-join). Candidates for a future reviewed mapping if confirmed to be
+# the same reporting identity as their parent.
+unresolved:
+  - caa_name: "BA CITYFLYER LTD"
+    reason: "Distinct AOC from British Airways Plc — not auto-mapped without confirmation"
+  - caa_name: "BA EUROFLYER LTD DBA BRITISH AIRWAYS"
+    reason: "Distinct AOC from British Airways Plc — not auto-mapped without confirmation"

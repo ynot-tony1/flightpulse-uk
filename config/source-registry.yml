@@ -1,0 +1,63 @@
+# Authoritative registry of external data sources. Mirrors the SourceDataset
+# table so the same facts exist in version control before any DB write.
+#
+# Verified live against the named URLs on 2026-08-19.
+
+sources:
+  - dataset_code: caa_airport_statistics
+    source_organisation: "UK Civil Aviation Authority"
+    dataset_name: "UK Airport Data"
+    data_family: airport_statistics
+    official_url: "https://www.caa.co.uk/data-and-analysis/uk-aviation-market/airports/uk-airport-data/"
+    licence_or_terms_url: "https://www.caa.co.uk/our-work/publications/terms-of-use/"
+    required_attribution: "Source: UK Civil Aviation Authority"
+    update_frequency: "Monthly, published on/around the 16th of the following month"
+    publication_notes: >
+      CAA states data has been compiled from various sources and validated,
+      but no warranty is given as to its accuracy, integrity or reliability.
+      FlightPulse UK passes this caveat through in docs/methodology.md.
+
+  - dataset_code: caa_punctuality_statistics
+    source_organisation: "UK Civil Aviation Authority"
+    dataset_name: "UK Flight Punctuality Statistics"
+    data_family: punctuality
+    official_url: "https://www.caa.co.uk/data-and-analysis/uk-aviation-market/flight-punctuality/uk-flight-punctuality-statistics/"
+    licence_or_terms_url: "https://www.caa.co.uk/our-work/publications/terms-of-use/"
+    required_attribution: "Source: UK Civil Aviation Authority"
+    update_frequency: "Monthly, published on/around the 16th of the following month"
+    publication_notes: >
+      Punctuality statistics cover a defined set of monitored airports and
+      airlines only — not every UK airport reports punctuality data.
+
+  - dataset_code: caa_airline_statistics
+    source_organisation: "UK Civil Aviation Authority"
+    dataset_name: "UK Airline Data"
+    data_family: airline_statistics
+    official_url: "https://www.caa.co.uk/data-and-analysis/uk-aviation-market/airlines/uk-airline-data/"
+    licence_or_terms_url: "https://www.caa.co.uk/our-work/publications/terms-of-use/"
+    required_attribution: "Source: UK Civil Aviation Authority"
+    update_frequency: "Monthly, published on/around the 23rd of the following month"
+
+  - dataset_code: ourairports_reference
+    source_organisation: "OurAirports (community open-data project)"
+    dataset_name: "OurAirports airports.csv"
+    data_family: airport_reference
+    official_url: "https://ourairports.com/data/"
+    licence_or_terms_url: "https://ourairports.com/data/"
+    required_attribution: "Airport geographic reference data: OurAirports (public domain)"
+    update_frequency: "Refreshed approximately monthly by FlightPulse UK (source updates continuously)"
+    publication_notes: >
+      Used exclusively for geographic metadata (coordinates, ICAO/IATA,
+      municipality, airport type). Never used to override or supplement
+      official CAA statistics.
+
+redistribution_policy:
+  sells_raw_caa_data: false
+  offers_bulk_caa_downloads: false
+  mirrors_complete_caa_datasets: false
+  implies_caa_endorsement: false
+  export_feature_enabled: false
+  export_feature_note: >
+    Bounded CSV export of FlightPulse UK's own computed/aggregated views is
+    a candidate future feature, but is disabled until CAA's current terms of
+    use are re-reviewed specifically for that use case. See docs/licensing.md.

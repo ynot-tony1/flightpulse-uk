@@ -1,0 +1,178 @@
+# Explicit allowlist of CAA CSV tables that FlightPulse UK imports.
+#
+# Table names/numbers were confirmed against a live CAA monthly airport-data
+# page (December 2025) and a live CAA monthly airline-data page (April
+# 2026) on 2026-08-19. CAA occasionally renumbers or renames tables between
+# publications — re-verify this list if discovery starts reporting zero
+# matches for a table (see docs/troubleshooting.md).
+#
+# We do NOT import every table CAA publishes. Tables are added here only
+# when they directly support a FlightPulse UK feature (section 6/97 of the
+# build brief: fewer, correctly-interpreted datasets over maximum coverage).
+
+airport_statistics:
+  dataset_code: caa_airport_statistics
+  index_url_pattern: "https://www.caa.co.uk/data-and-analysis/uk-aviation-market/airports/uk-airport-data/uk-airport-data-{year}/{month}-{year}/"
+  tables:
+    table_01:
+      name: "Size of UK Airports"
+      use: "Airport ranking by annual/monthly passenger volume"
+      status: allowlisted
+    table_03:
+      name: "Aircraft Movements"
+      use: "AirportMonthlyMetric: aircraft_movements_total"
+      status: allowlisted
+    table_09:
+      name: "Terminal and Transit Passengers"
+      use: "AirportMonthlyMetric: terminal_passengers, transit_passengers"
+      status: allowlisted
+    table_10_1:
+      name: "EU and Other Intl Pax Traffic"
+      use: "AirportMonthlyMetric: international_passengers"
+      status: allowlisted
+    table_10_2:
+      name: "Domestic Terminal Passenger Traffic"
+      use: "AirportMonthlyMetric: domestic_passengers"
+      status: allowlisted
+    table_12_1:
+      name: "Intl Air Pax Traffic Route Analysis"
+      use: "RouteMonthlyMetric for route_type=international"
+      status: allowlisted
+    table_12_2:
+      name: "Domestic Air Pax Traffic Route Analysis"
+      use: >
+        CANONICAL source for unique national domestic route passenger
+        totals. This table represents each domestic airport pair once and
+        MUST be used for any UK-wide domestic route total. See
+        docs/methodology.md#domestic-route-double-counting.
+      status: allowlisted
+      canonical_for: domestic_route_national_totals
+    table_12_3:
+      name: "Dom Air Pax Route Analysis by Each Reporting Airport"
+      use: >
+        Airport-centric domestic route reporting only (e.g. "routes from
+        Manchester"). Each domestic flow is reported once per participating
+        airport, so this table MUST NOT be summed to produce a national
+        domestic total — doing so double-counts every domestic route. See
+        docs/methodology.md#domestic-route-double-counting.
+      status: allowlisted
+      canonical_for: domestic_route_airport_centric_only
+    table_13:
+      name: "Freight by Type and Nationality"
+      use: "AirportMonthlyMetric: freight_tonnes"
+      status: allowlisted
+
+  # Tables published by CAA but intentionally not imported for the MVP.
+  # Listed for transparency, not silently ignored.
+  not_imported:
+    - table: table_04
+      name: "Trans Move by Type"
+      reason: "Not required by any current FlightPulse UK feature"
+    - table: table_04a
+      name: "Cancelled Movements"
+      reason: "Deferred — candidate for a future cancellations feature"
+    - table: table_05
+      name: "Air Transport Movements"
+      reason: "Overlaps with Table 03; revisit if movement definitions diverge"
+    - table: table_06
+      name: "Air Transport Movements Comparison"
+      reason: "Derived/comparison table; FlightPulse UK computes comparisons itself"
+    - table: table_08
+      name: "Air Pax by Type and Nat of Op"
+      reason: "Not required by any current FlightPulse UK feature"
+    - table: table_14
+      name: "International and Domestic Freight"
+      reason: "Overlaps with Table 13"
+    - table: table_15
+      name: "Freight by Aircraft Configuration"
+      reason: "Not required by any current FlightPulse UK feature"
+    - table: table_16
+      name: "Mail by Type and Nationality"
+      reason: "Out of scope for MVP"
+    - table: table_17
+      name: "International and Domestic Mail"
+      reason: "Out of scope for MVP"
+    - table: table_18
+      name: "Mail by Aircraft Configuration"
+      reason: "Out of scope for MVP"
+    - table: table_19
+      name: "Pax and ATM by Fixed Rotary Wing Aircraft"
+      reason: "Out of scope for MVP"
+
+punctuality:
+  dataset_code: caa_punctuality_statistics
+  index_url_pattern: "https://www.caa.co.uk/data-and-analysis/uk-aviation-market/flight-punctuality/uk-flight-punctuality-statistics/{year}/"
+  tables:
+    full_analysis_arrival_departure:
+      name: "Punctuality Statistics Full Analysis Arrival Departure"
+      use: "PunctualityMetric with direction_type set (arrival/departure)"
+      status: allowlisted
+    full_analysis:
+      name: "Punctuality Statistics Full Analysis"
+      use: "PunctualityMetric route/airline detail"
+      status: allowlisted
+    summary_analysis:
+      name: "Punctuality Statistics Summary Analysis"
+      use: "PunctualityMetric airport/airline monthly summary"
+      status: allowlisted
+  not_imported:
+    - table: on_time_performance_tables
+      name: "On Time Performance Tables"
+      reason: "XLSX only as of the 2026-08-19 check; CSV summary/full-analysis tables cover the same measures"
+    - table: punctuality_statistics_monthly
+      name: "Punctuality Statistics Monthly"
+      reason: "PDF narrative report, not a structured data table"
+
+airline_statistics:
+  dataset_code: caa_airline_statistics
+  index_url_pattern: "https://www.caa.co.uk/data-and-analysis/uk-aviation-market/airlines/uk-airline-data/uk-airline-data-{year}/{month}-{year}/"
+  tables:
+    table_03:
+      name: "Table 03 All Services"
+      use: "AirlineMonthlyMetric: flights_total, passengers_total"
+      status: allowlisted
+    table_04_all_scheduled:
+      name: "Table 04 All Scheduled Services"
+      use: "AirlineMonthlyMetric service_category=scheduled"
+      status: allowlisted
+    table_05_all_non_scheduled:
+      name: "Table 05 All Non Scheduled Services"
+      use: "AirlineMonthlyMetric service_category=non_scheduled"
+      status: allowlisted
+    table_08_1_utilisation_all:
+      name: "Table 08 1 Aircraft Type and Utilisation All Airlines"
+      use: "AirlineMonthlyMetric: aircraft_utilisation_hours"
+      status: allowlisted
+  not_imported:
+    - table: table_04_domestic_scheduled
+      name: "Table 04 Domestic Scheduled Services"
+      reason: "Redundant breakdown of Table 04 All Scheduled Services for MVP scope"
+    - table: table_04_eea_scheduled
+      name: "Table 04 EEA Scheduled Services"
+      reason: "Redundant breakdown for MVP scope"
+    - table: table_04_other_intl_scheduled
+      name: "Table 04 Other International Scheduled Services"
+      reason: "Redundant breakdown for MVP scope"
+    - table: table_05_domestic_non_scheduled
+      name: "Table 05 Domestic Non Scheduled Services"
+      reason: "Redundant breakdown for MVP scope"
+    - table: table_05_eea_non_scheduled
+      name: "Table 05 EEA Non Scheduled Services"
+      reason: "Redundant breakdown for MVP scope"
+    - table: table_05_other_intl_non_scheduled
+      name: "Table 05 Other International Non Scheduled Services"
+      reason: "Redundant breakdown for MVP scope"
+    - table: table_07_1_sub_charter_uk
+      name: "Table 07 1 Sub Charter Operations UK Operators"
+      reason: "Out of scope for MVP — ancillary table"
+    - table: table_07_2_sub_charter_non_uk
+      name: "Table 07 2 Sub Charter Operations Non UK Operators"
+      reason: "Out of scope for MVP — ancillary table"
+    - table: table_08_2_utilisation_individual
+      name: "Table 08 2 Aircraft Type and Utilisation Individual Airlines"
+      reason: "Per-airline detail deferred until Table 08.1 aggregate is validated in production"
+
+airport_reference:
+  dataset_code: ourairports_reference
+  csv_url: "https://davidmegginson.github.io/ourairports-data/airports.csv"
+  use: "Geographic reference only (lat/lon/ICAO/IATA/municipality/type) — never overrides CAA statistics"

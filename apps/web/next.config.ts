@@ -3,16 +3,17 @@ import path from "node:path";
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@flightpulse/shared"],
-  // Monorepo root, two levels up from apps/web — without this, Next.js's
-  // file tracer scopes itself to apps/web and can't resolve `../../`
-  // includes correctly during Vercel's remote build (works locally where
-  // the ambient cwd happens to differ).
+  // Monorepo root — apps/web depends on sibling packages (packages/shared),
+  // so the tracer needs to see the whole workspace, not just apps/web.
   outputFileTracingRoot: path.join(__dirname, "../.."),
-  // Next.js's serverless-function file tracer doesn't follow Prisma's
-  // dynamic (non-static) require() for its query engine binary, so it gets
-  // silently dropped from the deployed bundle unless explicitly included.
+  // Prisma's query engine binary is loaded via a dynamic (non-static)
+  // require() that Next.js's file tracer doesn't follow, so it gets
+  // silently dropped from the deployed function bundle unless explicitly
+  // included. The client now generates into apps/web/generated/prisma
+  // (co-located, not a sibling package) specifically to make this glob
+  // simple and reliable.
   outputFileTracingIncludes: {
-    "/**": ["../../packages/database/generated/client/**/*.node"],
+    "/**": ["./generated/prisma/**/*.node"],
   },
 };
 

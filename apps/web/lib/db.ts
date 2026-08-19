@@ -1,4 +1,4 @@
-import { PrismaClient } from "@flightpulse/database";
+import { PrismaClient } from "@/generated/prisma";
 
 /**
  * Server-only Prisma singleton. DATABASE_URL is intentionally unset until

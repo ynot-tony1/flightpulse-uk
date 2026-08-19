@@ -23,9 +23,6 @@ importers:
       '@deck.gl/mapbox':
         specifier: ^9.1.0
         version: 9.3.10(@deck.gl/core@9.3.10)(@luma.gl/core@9.3.6)(@math.gl/web-mercator@4.1.0)
-      '@flightpulse/database':
-        specifier: workspace:*
-        version: link:../../packages/database
       '@flightpulse/shared':
         specifier: workspace:*
         version: link:../../packages/shared

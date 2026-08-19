@@ -4,12 +4,16 @@
 // provisioning runbook.
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../generated/client"
+  provider = "prisma-client-js"
+  // Generated directly into apps/web (the only consumer, and the thing
+  // Vercel actually deploys) rather than a sibling package. A cross-package
+  // "../generated/client" output reached via relative traversal is a known
+  // cause of "could not locate Query Engine" failures on Vercel — its file
+  // tracer is built and tested against clients co-located with the deployed
+  // app, not ones reached by walking out of the project root.
+  output        = "../../../apps/web/generated/prisma"
   // "native" covers local dev; "rhel-openssl-3.0.x" is Vercel's serverless
-  // Function runtime — without it the deployed app can't find the query
-  // engine binary at runtime (only affects the deployed bundle, not `prisma
-  // generate` itself, which is why this wasn't caught by the local build).
+  // Function runtime.
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 

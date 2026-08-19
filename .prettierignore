@@ -1,0 +1,5 @@
+apps/web/generated/
+packages/database/generated/
+node_modules/
+.next/
+pnpm-lock.yaml

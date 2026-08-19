@@ -35,6 +35,7 @@ services/ingestor/tmp/
 
 # Prisma
 packages/database/generated/
+apps/web/generated/
 
 # Vercel CLI project link (contains project/org IDs, not secret but local-only)
 .vercel

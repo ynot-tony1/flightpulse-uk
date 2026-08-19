@@ -8,7 +8,7 @@ activity, with a live interactive route map.
 > live. CockroachDB Cloud provisioning is a deliberately deferred step —
 > see [Database status](#database-status) below.
 
-**Live URL:** _added after production deployment — see [Deployment](#deployment)_
+**Live URL:** https://flightpulse-uk.vercel.app
 
 ---
 

@@ -63,14 +63,32 @@ that step — follow it in order.
 
 ## Vercel
 
-- Project name: `flightpulse-uk`, root directory `apps/web`.
-- Uses Vercel's native GitHub integration (not manual CLI deploys) so that
-  every PR gets a preview deployment and `main` deploys to production
-  automatically once linked.
+- Project name: `flightpulse-uk`, root directory `apps/web` (set via
+  `vercel project update flightpulse-uk --root-directory apps/web`).
 - Non-sensitive env vars (`NEXT_PUBLIC_*`, `MAP_MAX_ROUTES`,
-  `API_CACHE_TTL_SECONDS`, `LOG_LEVEL`) are safe to set directly; see
-  `.env.example`. `DATABASE_URL` is set as a sensitive/encrypted Vercel env
-  var and is never prefixed `NEXT_PUBLIC_`.
+  `API_CACHE_TTL_SECONDS`, `LOG_LEVEL`) are set across production, preview
+  and development; see `.env.example`. `DATABASE_URL` is deferred — see
+  above — and will be added as a sensitive/encrypted Vercel env var, never
+  prefixed `NEXT_PUBLIC_`.
+- Both a preview and a production deployment were built and verified live
+  via the Vercel CLI (`vercel deploy` / `vercel deploy --prod`) — every
+  top-level route returns HTTP 200. Production: https://flightpulse-uk.vercel.app
+
+### Outstanding manual step: GitHub auto-deploy
+
+`vercel git connect` could not complete non-interactively — connecting a
+Vercel project to a GitHub repository requires the Vercel GitHub App to be
+installed/authorized for the account via the browser, which a CLI session
+cannot do. Until that one-time step is done, `main`/PR pushes will **not**
+automatically trigger a new Vercel deployment; use `vercel deploy` /
+`vercel deploy --prod` from the repository root (with `.vercel/project.json`
+linked) to deploy manually. To enable automatic deploys:
+
+1. Open the project in the Vercel dashboard → Settings → Git.
+2. Click "Connect Git Repository", authorize the Vercel GitHub App for
+   `ynot-tony1/flightpulse-uk` if prompted.
+3. From then on, PRs get preview deployments and pushes to `main` deploy to
+   production automatically, per section 69 of the build brief.
 
 ## GitHub Actions
 

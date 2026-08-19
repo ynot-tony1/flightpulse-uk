@@ -1,0 +1,4 @@
+rundate,this_period,last_period,reporting_airport_group_name,reporting_airport_name,total_pax_this_period,total_pax_last_period,total_pax_percent,terminal_pax_this_period,terminal_pax_last_period,terminal_pax_percent,transit_pax_this_period,transit_pax_last_period,transit_pax_percent
+13/02/2026 19:10,202512,202412,Other UK Airports,TEST AIRPORT A,120000,115000,4.3,119500,114500,4.4,500,500,0.0
+13/02/2026 19:10,202512,202412,Other UK Airports,TEST AIRPORT B,45000,44000,2.3,45000,44000,2.3,0,0,Null
+13/02/2026 19:10,202512,202412,Other UK Airports,UNKNOWN TEST AIRPORT,9000,8800,2.3,9000,8800,2.3,0,0,Null

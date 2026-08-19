@@ -1,0 +1,41 @@
+# Reviewed CAA airline-name -> canonical-airline mappings (section 28).
+# Airline names are not auto-joined; every mapping here has been reviewed.
+
+aliases:
+  - caa_name: "BRITISH AIRWAYS PLC"
+    canonical_name: "British Airways"
+    iata: "BA"
+    icao: "BAW"
+    reviewed: true
+  - caa_name: "EASYJET AIRLINE COMPANY LIMITED"
+    canonical_name: "easyJet"
+    iata: "U2"
+    icao: "EZY"
+    reviewed: true
+  - caa_name: "RYANAIR DAC"
+    canonical_name: "Ryanair"
+    iata: "FR"
+    icao: "RYR"
+    reviewed: true
+  - caa_name: "VIRGIN ATLANTIC AIRWAYS LIMITED"
+    canonical_name: "Virgin Atlantic"
+    iata: "VS"
+    icao: "VIR"
+    reviewed: true
+  - caa_name: "JET2.COM LIMITED"
+    canonical_name: "Jet2.com"
+    iata: "LS"
+    icao: "EXS"
+    reviewed: true
+  - caa_name: "TUI AIRWAYS LIMITED"
+    canonical_name: "TUI Airways"
+    iata: "BY"
+    icao: "TOM"
+    reviewed: true
+  - caa_name: "LOGANAIR LIMITED"
+    canonical_name: "Loganair"
+    iata: "LM"
+    icao: "LOG"
+    reviewed: true
+
+unresolved: []

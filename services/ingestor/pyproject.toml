@@ -1,0 +1,49 @@
+[project]
+name = "flightpulse-ingestor"
+version = "0.1.0"
+description = "CAA aviation-statistics discovery, download and ingestion service for FlightPulse UK"
+requires-python = ">=3.12"
+dependencies = [
+  "httpx>=0.28.1",
+  "pydantic>=2.10.4",
+  "typer>=0.15.1",
+  "tenacity>=9.0.0",
+  "polars>=1.18.0",
+  "psycopg[binary]>=3.2.3",
+  "selectolax>=0.3.27",
+  "structlog>=24.4.0",
+  "PyYAML>=6.0.2",
+]
+
+[project.scripts]
+ingestor = "flightpulse_ingestor.cli:app"
+
+[tool.uv]
+dev-dependencies = [
+  "pytest>=8.3.4",
+  "pytest-httpx>=0.35.0",
+  "ruff>=0.8.4",
+  "mypy>=1.14.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/flightpulse_ingestor"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

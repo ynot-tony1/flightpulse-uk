@@ -1,0 +1,133 @@
+# Reviewed CAA-name -> canonical-airport mappings. This is the single source
+# of truth for name matching (section 11/48) — fuzzy string matching is never
+# used at import time. Every entry here has been manually reviewed.
+#
+# match_method: icao | iata | manual_mapping | normalised_name
+
+aliases:
+  - caa_name: "LONDON HEATHROW"
+    canonical_code: "LHR"
+    iata: "LHR"
+    icao: "EGLL"
+    match_method: icao
+    reviewed: true
+  - caa_name: "LONDON GATWICK"
+    canonical_code: "LGW"
+    iata: "LGW"
+    icao: "EGKK"
+    match_method: icao
+    reviewed: true
+  - caa_name: "MANCHESTER"
+    canonical_code: "MAN"
+    iata: "MAN"
+    icao: "EGCC"
+    match_method: icao
+    reviewed: true
+  - caa_name: "LONDON STANSTED"
+    canonical_code: "STN"
+    iata: "STN"
+    icao: "EGSS"
+    match_method: icao
+    reviewed: true
+  - caa_name: "LONDON LUTON"
+    canonical_code: "LTN"
+    iata: "LTN"
+    icao: "EGGW"
+    match_method: icao
+    reviewed: true
+  - caa_name: "LONDON CITY"
+    canonical_code: "LCY"
+    iata: "LCY"
+    icao: "EGLC"
+    match_method: icao
+    reviewed: true
+  - caa_name: "EDINBURGH"
+    canonical_code: "EDI"
+    iata: "EDI"
+    icao: "EGPH"
+    match_method: icao
+    reviewed: true
+  - caa_name: "GLASGOW"
+    canonical_code: "GLA"
+    iata: "GLA"
+    icao: "EGPF"
+    match_method: icao
+    reviewed: true
+  - caa_name: "BIRMINGHAM"
+    canonical_code: "BHX"
+    iata: "BHX"
+    icao: "EGBB"
+    match_method: icao
+    reviewed: true
+  - caa_name: "BRISTOL"
+    canonical_code: "BRS"
+    iata: "BRS"
+    icao: "EGGD"
+    match_method: icao
+    reviewed: true
+  - caa_name: "LIVERPOOL (JOHN LENNON)"
+    canonical_code: "LPL"
+    iata: "LPL"
+    icao: "EGGP"
+    match_method: icao
+    reviewed: true
+  - caa_name: "NEWCASTLE"
+    canonical_code: "NCL"
+    iata: "NCL"
+    icao: "EGNT"
+    match_method: icao
+    reviewed: true
+  - caa_name: "BELFAST INTERNATIONAL"
+    canonical_code: "BFS"
+    iata: "BFS"
+    icao: "EGAA"
+    match_method: icao
+    reviewed: true
+  - caa_name: "BELFAST CITY (GEORGE BEST)"
+    canonical_code: "BHD"
+    iata: "BHD"
+    icao: "EGAC"
+    match_method: icao
+    reviewed: true
+  - caa_name: "CARDIFF WALES"
+    canonical_code: "CWL"
+    iata: "CWL"
+    icao: "EGFF"
+    match_method: icao
+    reviewed: true
+  - caa_name: "ABERDEEN"
+    canonical_code: "ABZ"
+    iata: "ABZ"
+    icao: "EGPD"
+    match_method: icao
+    reviewed: true
+  - caa_name: "LEEDS BRADFORD"
+    canonical_code: "LBA"
+    iata: "LBA"
+    icao: "EGNM"
+    match_method: icao
+    reviewed: true
+  - caa_name: "EAST MIDLANDS"
+    canonical_code: "EMA"
+    iata: "EMA"
+    icao: "EGNX"
+    match_method: icao
+    reviewed: true
+  - caa_name: "SOUTHAMPTON"
+    canonical_code: "SOU"
+    iata: "SOU"
+    icao: "EGHI"
+    match_method: icao
+    reviewed: true
+  - caa_name: "BOURNEMOUTH"
+    canonical_code: "BOH"
+    iata: "BOH"
+    icao: "EGHH"
+    match_method: icao
+    reviewed: true
+
+# Unresolved / ambiguous CAA destination text goes here for manual review
+# rather than being silently guessed (section 48).
+unresolved:
+  - caa_name: "OTHER UK AIRPORTS (COMBINED)"
+    reason: "CAA aggregate row spanning multiple small airports — cannot map to a single canonical airport"

@@ -1,0 +1,2 @@
+rundate,this_period,last_period,group_name,airport_1_name,airport_2_name,total_pax_this_period,total_pax_scheduled_this_period,total_pax_charter_this_period,total_pax_last_period,total_pax_scheduled_last_period,total_pax_charter_last_period,total_pax_percent
+13/02/2026 19:14,202512,202412,Other Reporting Airports,TEST AIRPORT A,TEST AIRPORT B,1164,1164,0,1081,1081,0,7.68

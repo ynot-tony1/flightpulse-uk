@@ -1,0 +1,43 @@
+# Default interactive map configuration (section 21-25).
+
+default_view:
+  latitude: 54.5
+  longitude: -3.5
+  zoom: 5
+  pitch: 0
+  bearing: 0
+
+modes:
+  - code: PASSENGER_ROUTES
+    label: "Passenger routes"
+    requires: [route_monthly_metrics]
+  - code: AIRPORT_TRAFFIC
+    label: "Airport traffic"
+    requires: [airport_monthly_metrics]
+  - code: PUNCTUALITY
+    label: "Punctuality"
+    requires: [punctuality_metrics]
+  - code: AVERAGE_DELAY
+    label: "Average delay"
+    requires: [punctuality_metrics]
+  - code: DOMESTIC
+    label: "Domestic"
+    requires: [route_monthly_metrics]
+  - code: INTERNATIONAL
+    label: "International"
+    requires: [route_monthly_metrics]
+  - code: FREIGHT
+    label: "Freight"
+    requires: [airport_monthly_metrics]
+  - code: GROWTH
+    label: "Growth"
+    requires: [airport_monthly_metrics]
+
+routes:
+  default_count: 25
+  selectable_counts: [10, 25, 50, 100]
+  hard_maximum: 200
+
+timeline:
+  autoplay_on_load: false
+  respect_reduced_motion: true

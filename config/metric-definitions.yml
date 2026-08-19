@@ -1,0 +1,85 @@
+# Canonical metric definitions. Mirrors the MetricDefinition table.
+# methodology_version bumps whenever a calculation rule changes; historical
+# records keep the methodology_version they were computed under (section 9:
+# "never silently change definitions between historical periods").
+
+metrics:
+  - metric_code: terminal_passengers
+    display_name: "Terminal passengers"
+    unit: passengers
+    source_definition: "CAA Table 09 — passengers joining/leaving aircraft at the airport (excludes transit/transfer-only passengers counted separately)"
+    calculation_method: "Direct from CAA source, no derivation"
+    methodology_version: "2026.1"
+    valid_from: "2026-01-01"
+
+  - metric_code: transit_passengers
+    display_name: "Transit passengers"
+    unit: passengers
+    source_definition: "CAA Table 09 — passengers who remain on board or transfer without passing through terminal facilities as an originating/terminating passenger"
+    calculation_method: "Direct from CAA source, no derivation"
+    methodology_version: "2026.1"
+    valid_from: "2026-01-01"
+
+  - metric_code: aircraft_movements_total
+    display_name: "Aircraft movements"
+    unit: movements
+    source_definition: "CAA Table 03 — landings and take-offs of aircraft (one landing + one take-off = 2 movements)"
+    calculation_method: "Direct from CAA source, no derivation"
+    methodology_version: "2026.1"
+    valid_from: "2026-01-01"
+
+  - metric_code: international_passengers
+    display_name: "International passengers"
+    unit: passengers
+    source_definition: "CAA Table 10.1 — terminal passengers on international (EU and other international) services"
+    calculation_method: "Direct from CAA source, no derivation"
+    methodology_version: "2026.1"
+    valid_from: "2026-01-01"
+
+  - metric_code: domestic_passengers
+    display_name: "Domestic passengers"
+    unit: passengers
+    source_definition: "CAA Table 10.2 — terminal passengers on domestic services"
+    calculation_method: "Direct from CAA source, no derivation"
+    methodology_version: "2026.1"
+    valid_from: "2026-01-01"
+
+  - metric_code: freight_tonnes
+    display_name: "Freight"
+    unit: tonnes
+    source_definition: "CAA Table 13 — freight loaded and unloaded"
+    calculation_method: "Direct from CAA source, no derivation"
+    methodology_version: "2026.1"
+    valid_from: "2026-01-01"
+
+  - metric_code: average_delay_minutes
+    display_name: "Average delay"
+    unit: minutes
+    source_definition: "CAA punctuality full-analysis tables — average minutes between scheduled and actual time for matched flights"
+    calculation_method: >
+      CAA-published average used directly when a single record covers the
+      requested scope. When combining multiple CAA records (e.g. multiple
+      airlines at one airport), flight-weighted average is used:
+      sum(average_delay * flights_matched) / sum(flights_matched). Never a
+      plain (unweighted) mean of averages.
+    methodology_version: "2026.1"
+    valid_from: "2026-01-01"
+
+  - metric_code: on_time_percentage
+    display_name: "On-time performance"
+    unit: percent
+    source_definition: "CAA punctuality tables — percentage of matched flights departing/arriving within 15 minutes of schedule"
+    calculation_method: >
+      CAA-published percentage used directly for a single record. When
+      combining records, computed from underlying flight counts
+      (on_time_flights / total_flights), never as a mean of percentages.
+    methodology_version: "2026.1"
+    valid_from: "2026-01-01"
+
+  - metric_code: distance_km
+    display_name: "Approximate route distance"
+    unit: kilometres
+    source_definition: "Not a CAA-published statistic — great-circle distance calculated from OurAirports coordinates"
+    calculation_method: "Haversine great-circle distance between origin and destination airport coordinates"
+    methodology_version: "2026.1"
+    valid_from: "2026-01-01"

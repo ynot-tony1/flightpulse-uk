@@ -1,0 +1,8 @@
+CAA Table 09 - Terminal and Transit Passengers - TEST FIXTURE (June 2026)
+
+Airport,Terminal Passengers,Transit Passengers
+TEST AIRPORT A,120000,500
+TEST AIRPORT B,45000,0
+TEST AIRPORT UNKNOWN,9000,0
+
+Notes: [1] Figures are provisional. This is fixture data for automated tests only.

@@ -1,0 +1,15 @@
+aliases:
+  - caa_name: "TEST AIRPORT A"
+    canonical_code: "TSA"
+    iata: "TSA"
+    icao: "TEST"
+    match_method: icao
+    reviewed: true
+  - caa_name: "TEST AIRPORT B"
+    canonical_code: "TSB"
+    iata: "TSB"
+    icao: "TESB"
+    match_method: icao
+    reviewed: true
+
+unresolved: []

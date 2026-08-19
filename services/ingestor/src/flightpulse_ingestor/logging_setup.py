@@ -17,7 +17,7 @@ import structlog
 def configure_logging(level: str = "INFO") -> None:
     # stderr, not stdout: CLI commands (e.g. `inspect`) print JSON to stdout
     # and must stay pipeable/parseable without log lines mixed in.
-    logging.basicConfig(format="%(message)s", stream=sys.stderr, level=level)
+    logging.basicConfig(format="%(message)s", stream=sys.stderr, level=level.upper())
 
     structlog.configure(
         processors=[

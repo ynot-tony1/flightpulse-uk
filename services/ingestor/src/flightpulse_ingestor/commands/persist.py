@@ -301,7 +301,11 @@ def persist_airlines(conn: psycopg.Connection, config_dir: Path, result: Adapter
 
 
 def _tally(summary: PersistSummary, outcome: str) -> None:
-    if outcome == "inserted":
-        summary.rows_inserted += 1
-    else:
-        summary.rows_updated += 1
+    # CockroachDB has no xmax-style row to distinguish INSERT from UPDATE
+    # on an ON CONFLICT DO UPDATE (unlike Postgres), so both are counted as
+    # "inserted" — a real distinction would require a SELECT-then-INSERT/
+    # UPDATE round trip per row, which isn't worth the extra query volume
+    # here. rows_updated is kept in PersistSummary for interface stability
+    # but is currently always zero.
+    assert outcome == "upserted"
+    summary.rows_inserted += 1

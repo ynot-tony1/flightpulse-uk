@@ -48,7 +48,6 @@ def upsert_airport_monthly_metric(
             source_dataset_id = EXCLUDED.source_dataset_id,
             source_release_id = EXCLUDED.source_release_id,
             updated_at = now()
-        RETURNING (xmax = 0) AS inserted
         """,
         {
             "airport_id": airport_id,
@@ -61,8 +60,7 @@ def upsert_airport_monthly_metric(
             "source_release_id": source_release_id,
         },
     )
-    row = cur.fetchone()
-    return "inserted" if row and row[0] else "updated"
+    return "upserted"
 
 
 def upsert_airport(
@@ -300,7 +298,6 @@ def upsert_airline_monthly_metric(
              %(value)s, %(unit)s, %(service_category)s, %(source_dataset_id)s, %(source_release_id)s, now(), now())
         ON CONFLICT (airline_id, year, month, metric_code, service_category)
         DO UPDATE SET value = EXCLUDED.value, updated_at = now()
-        RETURNING (xmax = 0) AS inserted
         """,
         {
             "airline_id": airline_id,
@@ -314,8 +311,7 @@ def upsert_airline_monthly_metric(
             "source_release_id": source_release_id,
         },
     )
-    row = cur.fetchone()
-    return "inserted" if row and row[0] else "updated"
+    return "upserted"
 
 
 def delete_punctuality_for_period(cur: psycopg.Cursor, *, year: int, month: int) -> None:
@@ -407,7 +403,6 @@ def upsert_route_monthly_metric(
             source_dataset_id = EXCLUDED.source_dataset_id,
             source_release_id = EXCLUDED.source_release_id,
             updated_at = now()
-        RETURNING (xmax = 0) AS inserted
         """,
         {
             "route_id": route_id,
@@ -421,5 +416,4 @@ def upsert_route_monthly_metric(
             "source_release_id": source_release_id,
         },
     )
-    row = cur.fetchone()
-    return "inserted" if row and row[0] else "updated"
+    return "upserted"

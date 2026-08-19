@@ -1,0 +1,22 @@
+{
+  "name": "flightpulse-uk",
+  "private": true,
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.18.0",
+  "scripts": {
+    "dev": "pnpm --filter @flightpulse/web dev",
+    "build": "pnpm --filter @flightpulse/web build",
+    "lint": "pnpm --filter @flightpulse/web lint",
+    "typecheck": "pnpm --filter @flightpulse/web typecheck",
+    "test": "pnpm --filter @flightpulse/web test",
+    "test:e2e": "pnpm --filter @flightpulse/web test:e2e",
+    "format": "prettier --write .",
+    "prisma:generate": "pnpm --filter @flightpulse/database generate"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  }
+}

@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+apps/web/.next/
+apps/web/out/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Env files (never commit secrets)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Python
+services/ingestor/.venv/
+services/ingestor/__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+services/ingestor/dist/
+
+# Ingestion working files (never commit downloaded CAA source files)
+services/ingestor/.data/
+services/ingestor/tmp/
+
+# Prisma
+packages/database/generated/
+
+# OS/editor
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/

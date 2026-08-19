@@ -1,0 +1,27 @@
+services:
+  ingestor:
+    build:
+      context: ./services/ingestor
+    image: flightpulse-ingestor:local
+    env_file:
+      - .env
+    volumes:
+      - ./services/ingestor:/app
+    command: ["python", "-m", "flightpulse_ingestor.cli", "--help"]
+
+  # Local-only Postgres for developing the ingestor/Prisma schema without
+  # touching CockroachDB Cloud. Not used in production — production uses
+  # CockroachDB Cloud exclusively (see docs/deployment.md).
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: flightpulse
+      POSTGRES_PASSWORD: flightpulse_dev_only
+      POSTGRES_DB: flight_intelligence
+    ports:
+      - "5432:5432"
+    volumes:
+      - flightpulse_db_data:/var/lib/postgresql/data
+
+volumes:
+  flightpulse_db_data:

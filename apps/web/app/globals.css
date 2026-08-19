@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/*
+ * FlightPulse UK design tokens.
+ * Aviation-inspired but restrained: ink/paper neutrals, one confident sky
+ * blue for identity, amber reserved for delay/warning signal, emerald for
+ * on-time/positive signal. No neon, no radar/glassmorphism cliches.
+ */
+:root {
+  --color-paper: #ffffff;
+  --color-paper-subtle: #f6f7f9;
+  --color-paper-raised: #ffffff;
+  --color-ink: #0c1420;
+  --color-ink-muted: #445064;
+  --color-ink-faint: #7c8798;
+  --color-border: #e2e6ec;
+  --color-border-strong: #cbd2dd;
+
+  --color-sky-50: #eef6ff;
+  --color-sky-100: #d9ecff;
+  --color-sky-400: #3f8cd8;
+  --color-sky-500: #1f6fb8;
+  --color-sky-600: #15588f;
+  --color-sky-700: #0f4470;
+
+  --color-amber-100: #fdf1d6;
+  --color-amber-500: #c8871a;
+  --color-amber-600: #9c6a13;
+
+  --color-emerald-100: #dcf3e8;
+  --color-emerald-500: #1c8a5c;
+  --color-emerald-600: #146c47;
+
+  --color-rose-100: #fbe3e3;
+  --color-rose-500: #c23d3d;
+  --color-rose-600: #9c2f2f;
+
+  --shadow-card:
+    0 1px 2px rgba(12, 20, 32, 0.04), 0 1px 12px rgba(12, 20, 32, 0.05);
+}
+
+:root[data-theme="dark"] {
+  --color-paper: #0a0f18;
+  --color-paper-subtle: #0f1622;
+  --color-paper-raised: #121a28;
+  --color-ink: #eef1f6;
+  --color-ink-muted: #aab4c4;
+  --color-ink-faint: #6d7889;
+  --color-border: #202a3a;
+  --color-border-strong: #2c384c;
+
+  --color-sky-50: #0f2438;
+  --color-sky-100: #123152;
+  --color-sky-400: #6bb3ee;
+  --color-sky-500: #4d9de0;
+  --color-sky-600: #7cc0f4;
+  --color-sky-700: #a9d8fa;
+
+  --color-amber-100: #2e2411;
+  --color-amber-500: #e0ac4c;
+  --color-amber-600: #f0c778;
+
+  --color-emerald-100: #10281d;
+  --color-emerald-500: #3fb583;
+  --color-emerald-600: #63cc9d;
+
+  --color-rose-100: #2c1414;
+  --color-rose-500: #e07070;
+  --color-rose-600: #ee8c8c;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 16px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-paper: #0a0f18;
+    --color-paper-subtle: #0f1622;
+    --color-paper-raised: #121a28;
+    --color-ink: #eef1f6;
+    --color-ink-muted: #aab4c4;
+    --color-ink-faint: #6d7889;
+    --color-border: #202a3a;
+    --color-border-strong: #2c384c;
+
+    --color-sky-50: #0f2438;
+    --color-sky-100: #123152;
+    --color-sky-400: #6bb3ee;
+    --color-sky-500: #4d9de0;
+    --color-sky-600: #7cc0f4;
+    --color-sky-700: #a9d8fa;
+
+    --color-amber-100: #2e2411;
+    --color-amber-500: #e0ac4c;
+    --color-amber-600: #f0c778;
+
+    --color-emerald-100: #10281d;
+    --color-emerald-500: #3fb583;
+    --color-emerald-600: #63cc9d;
+
+    --color-rose-100: #2c1414;
+    --color-rose-500: #e07070;
+    --color-rose-600: #ee8c8c;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 16px rgba(0, 0, 0, 0.35);
+  }
+}
+
+@theme inline {
+  --color-paper: var(--color-paper);
+  --color-paper-subtle: var(--color-paper-subtle);
+  --color-paper-raised: var(--color-paper-raised);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-ink-faint: var(--color-ink-faint);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+
+  --color-sky-50: var(--color-sky-50);
+  --color-sky-100: var(--color-sky-100);
+  --color-sky-400: var(--color-sky-400);
+  --color-sky-500: var(--color-sky-500);
+  --color-sky-600: var(--color-sky-600);
+  --color-sky-700: var(--color-sky-700);
+
+  --color-amber-100: var(--color-amber-100);
+  --color-amber-500: var(--color-amber-500);
+  --color-amber-600: var(--color-amber-600);
+
+  --color-emerald-100: var(--color-emerald-100);
+  --color-emerald-500: var(--color-emerald-500);
+  --color-emerald-600: var(--color-emerald-600);
+
+  --color-rose-100: var(--color-rose-100);
+  --color-rose-500: var(--color-rose-500);
+  --color-rose-600: var(--color-rose-600);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

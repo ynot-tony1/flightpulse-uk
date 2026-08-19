@@ -5,13 +5,13 @@
 # match_method: icao | iata | manual_mapping | normalised_name
 
 aliases:
-  - caa_name: "LONDON HEATHROW"
+  - caa_name: "HEATHROW"
     canonical_code: "LHR"
     iata: "LHR"
     icao: "EGLL"
     match_method: icao
     reviewed: true
-  - caa_name: "LONDON GATWICK"
+  - caa_name: "GATWICK"
     canonical_code: "LGW"
     iata: "LGW"
     icao: "EGKK"
@@ -23,13 +23,13 @@ aliases:
     icao: "EGCC"
     match_method: icao
     reviewed: true
-  - caa_name: "LONDON STANSTED"
+  - caa_name: "STANSTED"
     canonical_code: "STN"
     iata: "STN"
     icao: "EGSS"
     match_method: icao
     reviewed: true
-  - caa_name: "LONDON LUTON"
+  - caa_name: "LUTON"
     canonical_code: "LTN"
     iata: "LTN"
     icao: "EGGW"
@@ -108,6 +108,12 @@ aliases:
     match_method: icao
     reviewed: true
   - caa_name: "EAST MIDLANDS"
+    canonical_code: "EMA"
+    iata: "EMA"
+    icao: "EGNX"
+    match_method: icao
+    reviewed: true
+  - caa_name: "EAST MIDLANDS INTERNATIONAL"
     canonical_code: "EMA"
     iata: "EMA"
     icao: "EGNX"

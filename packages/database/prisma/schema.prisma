@@ -1,0 +1,314 @@
+// FlightPulse UK — production schema
+//
+// Provider is CockroachDB Cloud. Connection strings are intentionally not
+// configured yet — see docs/deployment.md for the deferred provisioning step.
+// Until DATABASE_URL is set, `prisma generate` still works (it only reads
+// this file); `prisma migrate` requires a live connection.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Airports
+// ---------------------------------------------------------------------------
+
+model Airport {
+  id                    String   @id @default(cuid())
+  canonicalCode         String   @unique @map("canonical_code")
+  iataCode              String?  @unique @map("iata_code")
+  icaoCode              String?  @unique @map("icao_code")
+  caaName               String   @map("caa_name")
+  displayName           String   @map("display_name")
+  normalisedName        String   @map("normalised_name")
+  municipality           String?
+  countryCode           String   @map("country_code")
+  countryName           String   @map("country_name")
+  ukNation              String?  @map("uk_nation")
+  region                String?
+  latitude              Float
+  longitude             Float
+  elevationFt           Int?     @map("elevation_ft")
+  airportType           String   @map("airport_type")
+  caaReportingAirport   Boolean  @default(false) @map("caa_reporting_airport")
+  punctualityMonitored  Boolean  @default(false) @map("punctuality_monitored")
+  sourceReferenceId     String?  @map("source_reference_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  aliases               AirportAlias[]
+  monthlyMetrics        AirportMonthlyMetric[]
+  routesAsOrigin        Route[] @relation("RouteOrigin")
+  routesAsDestination    Route[] @relation("RouteDestination")
+  punctualityAsAirport  PunctualityMetric[] @relation("PunctualityAirport")
+  punctualityAsDestination PunctualityMetric[] @relation("PunctualityDestinationAirport")
+
+  @@index([normalisedName])
+  @@map("airports")
+}
+
+model AirportAlias {
+  id              String   @id @default(cuid())
+  airportId       String   @map("airport_id")
+  airport         Airport  @relation(fields: [airportId], references: [id])
+  source          String
+  sourceName      String   @map("source_name")
+  normalisedName  String   @map("normalised_name")
+  reviewed        Boolean  @default(false)
+  matchMethod     String   @map("match_method")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@unique([source, sourceName])
+  @@index([airportId])
+  @@map("airport_aliases")
+}
+
+model AirportMonthlyMetric {
+  id              String   @id @default(cuid())
+  airportId       String   @map("airport_id")
+  airport         Airport  @relation(fields: [airportId], references: [id])
+  year            Int
+  month           Int
+  periodStart     DateTime @map("period_start")
+  metricCode      String   @map("metric_code")
+  value           Float
+  unit            String
+  sourceDatasetId String   @map("source_dataset_id")
+  sourceReleaseId String   @map("source_release_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@unique([airportId, year, month, metricCode])
+  @@index([airportId, year, month])
+  @@map("airport_monthly_metrics")
+}
+
+// ---------------------------------------------------------------------------
+// Routes
+// ---------------------------------------------------------------------------
+
+model Route {
+  id                   String   @id @default(cuid())
+  originAirportId      String   @map("origin_airport_id")
+  originAirport        Airport  @relation("RouteOrigin", fields: [originAirportId], references: [id])
+  destinationAirportId String   @map("destination_airport_id")
+  destinationAirport   Airport  @relation("RouteDestination", fields: [destinationAirportId], references: [id])
+  routeType            String   @map("route_type") // "domestic" | "international"
+  distanceKm           Float?   @map("distance_km")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  monthlyMetrics RouteMonthlyMetric[]
+
+  @@unique([originAirportId, destinationAirportId])
+  @@index([originAirportId])
+  @@index([destinationAirportId])
+  @@map("routes")
+}
+
+model RouteMonthlyMetric {
+  id              String   @id @default(cuid())
+  routeId         String   @map("route_id")
+  route           Route    @relation(fields: [routeId], references: [id])
+  year            Int
+  month           Int
+  passengers      Float?
+  flights         Float?
+  seats           Float?
+  freightTonnes   Float?   @map("freight_tonnes")
+  sourceTable     String   @map("source_table")
+  sourceDatasetId String   @map("source_dataset_id")
+  sourceReleaseId String   @map("source_release_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@unique([routeId, year, month])
+  @@index([routeId, year, month])
+  @@map("route_monthly_metrics")
+}
+
+// ---------------------------------------------------------------------------
+// Punctuality
+// ---------------------------------------------------------------------------
+
+model PunctualityMetric {
+  id                     String   @id @default(cuid())
+  year                   Int
+  month                  Int
+  airportId              String   @map("airport_id")
+  airport                Airport  @relation("PunctualityAirport", fields: [airportId], references: [id])
+  destinationAirportId   String?  @map("destination_airport_id")
+  destinationAirport     Airport? @relation("PunctualityDestinationAirport", fields: [destinationAirportId], references: [id])
+  airlineId              String?  @map("airline_id")
+  airline                Airline? @relation(fields: [airlineId], references: [id])
+  serviceType            String?  @map("service_type") // scheduled | charter
+  directionType          String?  @map("direction_type") // arrival | departure
+  flightsMatched         Int?     @map("flights_matched")
+  averageDelayMinutes    Float?   @map("average_delay_minutes")
+  onTimePercentage       Float?   @map("on_time_percentage")
+  delay15Percentage      Float?   @map("delay_15_percentage")
+  delay30Percentage      Float?   @map("delay_30_percentage")
+  delay60Percentage      Float?   @map("delay_60_percentage")
+  cancelledCount         Int?     @map("cancelled_count")
+  sourceDatasetId        String   @map("source_dataset_id")
+  sourceReleaseId        String   @map("source_release_id")
+  methodologyVersion     String   @map("methodology_version")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  @@index([year, month])
+  @@index([airportId])
+  @@index([destinationAirportId])
+  @@index([airlineId])
+  @@map("punctuality_metrics")
+}
+
+// ---------------------------------------------------------------------------
+// Airlines
+// ---------------------------------------------------------------------------
+
+model Airline {
+  id              String   @id @default(cuid())
+  canonicalName   String   @map("canonical_name")
+  normalisedName  String   @unique @map("normalised_name")
+  caaName         String   @map("caa_name")
+  iataCode        String?  @map("iata_code")
+  icaoCode        String?  @map("icao_code")
+  countryCode     String?  @map("country_code")
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  monthlyMetrics   AirlineMonthlyMetric[]
+  punctualityRecords PunctualityMetric[]
+
+  @@map("airlines")
+}
+
+model AirlineMonthlyMetric {
+  id              String   @id @default(cuid())
+  airlineId       String   @map("airline_id")
+  airline         Airline  @relation(fields: [airlineId], references: [id])
+  year            Int
+  month           Int
+  metricCode      String   @map("metric_code")
+  value           Float
+  unit            String
+  serviceCategory String?  @map("service_category")
+  sourceDatasetId String   @map("source_dataset_id")
+  sourceReleaseId String   @map("source_release_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@unique([airlineId, year, month, metricCode, serviceCategory])
+  @@map("airline_monthly_metrics")
+}
+
+// ---------------------------------------------------------------------------
+// Source tracking
+// ---------------------------------------------------------------------------
+
+model SourceDataset {
+  id                   String   @id @default(cuid())
+  sourceOrganisation   String   @map("source_organisation")
+  datasetCode          String   @unique @map("dataset_code")
+  datasetName          String   @map("dataset_name")
+  dataFamily           String   @map("data_family") // airport_statistics | punctuality | airline_statistics | airport_reference
+  officialUrl          String   @map("official_url")
+  licenceOrTermsUrl    String   @map("licence_or_terms_url")
+  requiredAttribution  String   @map("required_attribution")
+  updateFrequency      String   @map("update_frequency")
+  enabled              Boolean  @default(true)
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  releases IngestionSourceRelease[]
+
+  @@map("source_datasets")
+}
+
+model IngestionSourceRelease {
+  id               String    @id @default(cuid())
+  sourceDatasetId  String    @map("source_dataset_id")
+  sourceDataset    SourceDataset @relation(fields: [sourceDatasetId], references: [id])
+  year             Int
+  month            Int
+  publicationDate  DateTime? @map("publication_date")
+  revisionDate     DateTime? @map("revision_date")
+  sourceUrl        String    @map("source_url")
+  downloadUrl      String    @map("download_url")
+  etag             String?
+  lastModified     String?   @map("last_modified")
+  checksumSha256   String    @map("checksum_sha256")
+  fileSizeBytes    Int?      @map("file_size_bytes")
+  status           String    // pending | downloaded | imported | failed | superseded
+  rowsImported     Int?      @map("rows_imported")
+  retrievedAt      DateTime  @map("retrieved_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  @@unique([sourceDatasetId, year, month, checksumSha256])
+  @@index([sourceDatasetId, year, month])
+  @@map("source_releases")
+}
+
+model MetricDefinition {
+  metricCode          String   @id @map("metric_code")
+  displayName         String   @map("display_name")
+  description         String
+  unit                String
+  sourceDefinition    String   @map("source_definition")
+  calculationMethod   String   @map("calculation_method")
+  methodologyVersion  String   @map("methodology_version")
+  validFrom            DateTime @map("valid_from")
+  validTo              DateTime? @map("valid_to")
+
+  @@map("metric_definitions")
+}
+
+model IngestionRun {
+  id              String    @id @default(cuid())
+  sourceDatasetId String    @map("source_dataset_id")
+  sourceReleaseId String?   @map("source_release_id")
+  status          String    // running | succeeded | failed | skipped
+  rowsSeen        Int       @default(0) @map("rows_seen")
+  rowsInserted    Int       @default(0) @map("rows_inserted")
+  rowsUpdated     Int       @default(0) @map("rows_updated")
+  rowsUnchanged   Int       @default(0) @map("rows_unchanged")
+  rowsRejected    Int       @default(0) @map("rows_rejected")
+  startedAt       DateTime  @map("started_at")
+  completedAt     DateTime? @map("completed_at")
+  durationSeconds Float?    @map("duration_seconds")
+  workflowRunId   String?   @map("workflow_run_id")
+  gitSha          String?   @map("git_sha")
+  errorSummary    String?   @map("error_summary")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([sourceDatasetId])
+  @@map("ingestion_runs")
+}
+
+// ---------------------------------------------------------------------------
+// Precomputed aggregates (dashboard / rankings)
+// ---------------------------------------------------------------------------
+
+model AggregateMetric {
+  id          String   @id @default(cuid())
+  scope       String   // national | airport_ranking | route_ranking | punctuality | airline_ranking
+  scopeKey    String   @map("scope_key") // e.g. airportId, "all", routeId
+  year        Int
+  month       Int?
+  metricCode  String   @map("metric_code")
+  value       Float
+  unit        String
+  computedAt  DateTime @default(now()) @map("computed_at")
+
+  @@unique([scope, scopeKey, year, month, metricCode])
+  @@index([scope, year, month])
+  @@map("aggregate_metrics")
+}

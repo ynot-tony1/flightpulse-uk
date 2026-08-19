@@ -36,7 +36,7 @@
 | Redeploy Vercel | push to `main`, or `vercel deploy --prod` from a linked checkout |
 | Roll back Vercel | `vercel rollback` (promotes a previous deployment) |
 | Rotate database credentials | provision new CockroachDB role passwords, update the three GitHub/Vercel secrets, then revoke the old passwords |
-| Check CockroachDB storage/RU use | CockroachDB Cloud console → cluster `safe-hippo` → Metrics (see section 79 of the build brief for the calibration targets) |
+| Check CockroachDB storage/RU use | CockroachDB Cloud console → cluster `woeful-climber` → Metrics (see section 79 of the build brief for the calibration targets) |
 | Verify production health | open `/status`, confirm DB/ingestion freshness fields are populated |
 
 ## Failed-import triage

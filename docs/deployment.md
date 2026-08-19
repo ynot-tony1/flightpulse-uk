@@ -7,7 +7,7 @@
 | Web app | Vercel | Git push (preview on PR, production on `main`) |
 | Ingestion | GitHub Actions (Docker) | Schedule + `workflow_dispatch` |
 | Migrations | GitHub Actions (`migrate-production.yml`) | Manual `workflow_dispatch` only |
-| Database | CockroachDB Cloud (`safe-hippo` cluster) | Always-on managed service |
+| Database | CockroachDB Cloud (`woeful-climber` cluster) | Always-on managed service |
 
 Nothing requires a developer's machine to stay on after the initial setup
 described here.
@@ -21,45 +21,54 @@ flowchart LR
     VERCEL -->|DATABASE_URL, read-only| DB
 ```
 
-## Deferred database setup
+## Database setup (completed)
 
-**As of this build, CockroachDB Cloud provisioning has intentionally not
-been performed.** Per the project owner's instruction, everything else was
-built first; the database step happens when they return with the cluster's
-admin bootstrap connection string. This section is the exact runbook for
-that step — follow it in order.
+CockroachDB Cloud is provisioned: cluster `woeful-climber`, database
+`flight_intelligence`, with three least-privilege roles created via the SQL
+below (see `packages/database/prisma/migrations/` for the applied baseline
+schema — 13 application tables plus Prisma's migration-history table).
 
-1. Confirm `COCKROACH_BOOTSTRAP_URL` is present in the shell environment
-   (`test -n "$COCKROACH_BOOTSTRAP_URL"`) without printing it.
-2. Connect and verify: `psql "$COCKROACH_BOOTSTRAP_URL" -c "SELECT 1;"` (or
-   `ingestor verify` once `INGEST_DATABASE_URL` is set to the same value
-   temporarily) — confirms TLS and cluster reachability without ever
-   echoing the URL.
-3. Create the database: `CREATE DATABASE IF NOT EXISTS flight_intelligence;`
-4. Create three roles with least privilege (see docs/database.md and
-   section 66 of the build brief for the exact grants):
-   `flight_migrator` (schema changes only), `flight_ingestor` (DML on
-   aviation + ingestion tables), `flight_app` (read-only).
-5. Generate strong passwords for each role with a password generator —
-   never typed or echoed in a terminal that gets logged.
-6. Build three connection strings — `MIGRATION_DATABASE_URL`,
-   `INGEST_DATABASE_URL`, `DATABASE_URL` (the app's *read-only* URL, despite
-   the generic name) — and store each directly in its target secret store:
-   - `MIGRATION_DATABASE_URL` and `INGEST_DATABASE_URL` →
-     `gh secret set MIGRATION_DATABASE_URL` / `gh secret set INGEST_DATABASE_URL`
-     (paste at the interactive prompt, not as a CLI argument).
-   - `DATABASE_URL` → `vercel env add DATABASE_URL production` (and
-     `preview` if preview deployments should also read live data).
-7. From a machine with `MIGRATION_DATABASE_URL` set:
-   `pnpm --filter @flightpulse/database migrate:deploy` (wraps
-   `prisma migrate deploy` — never `migrate reset` against production, see
-   section 78 of the build brief).
-8. Run `ingestor verify` (uses `INGEST_DATABASE_URL`) and a Vercel-side
-   smoke test (any page that reads from the database) to confirm all three
-   roles actually work.
-9. `unset COCKROACH_BOOTSTRAP_URL` in the shell once step 6 is done.
-10. Run the calibration import (docs/ingestion.md "Next steps",
-    section 79 of the build brief) before backfilling years of history.
+- `flight_migrator` — `GRANT ALL ON DATABASE flight_intelligence` — used only
+  by the manual `migrate-production.yml` workflow, never configured in the
+  Vercel app.
+- `flight_ingestor` — `SELECT, INSERT, UPDATE, DELETE` on tables (and
+  `USAGE, SELECT` on sequences) via `ALTER DEFAULT PRIVILEGES FOR ROLE
+  flight_migrator`, so it automatically covers tables created by future
+  migrations too — used by the ingestion service.
+- `flight_app` — `SELECT` only, via the same default-privilege mechanism —
+  used by the deployed web app.
+
+Verified live: `SHOW GRANTS ON TABLE airports` confirms exactly this split,
+and `/api/status` on production reports `databaseConfigured: true`.
+
+Connection strings are stored only in their target secret store — never in
+the repository:
+
+- `INGEST_DATABASE_URL`, `MIGRATION_DATABASE_URL` → GitHub Actions secrets
+  (`gh secret list --repo ynot-tony1/flightpulse-uk`).
+- `DATABASE_URL` (the app's read-only connection, via `flight_app`) →
+  Vercel project environment variables (production/preview/development).
+
+For local development, copy `.env.example` to `.env` (gitignored) and fill
+in real values there — never in `.env.example` itself, which is committed.
+
+### Applying future schema changes
+
+The baseline schema was applied directly via a generated SQL diff
+(`prisma migrate diff --from-empty ... --script`) rather than `prisma db
+push`, because CockroachDB Serverless auto-creates a `crdb_internal_region`
+enum on `CREATE DATABASE` that `db push`'s full-database diff tries (and
+fails) to drop. For incremental changes going forward, generate a normal
+migration locally (`prisma migrate dev`) against a scratch database, commit
+the resulting `prisma/migrations/<timestamp>_<name>/migration.sql`, and
+apply it in production via the `migrate-production.yml` workflow
+(`prisma migrate deploy` — never `migrate reset`).
+
+### Calibration import
+
+Historical backfill has not started yet — see docs/ingestion.md "Next
+steps" and section 79 of the build brief. Run one month per data family
+first and measure storage/RU before importing years of history.
 
 ## Vercel
 

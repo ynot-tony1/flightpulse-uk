@@ -56,13 +56,10 @@ sequenceDiagram
 `DATABASE_URL` never reaches the browser — see docs/deployment.md and
 docs/operations.md#secret-handling.
 
-## Deferred component
+## Database provisioning
 
-At the time this repository was built, CockroachDB Cloud provisioning
-(cluster `safe-hippo`, database `flight_intelligence`) was intentionally
-deferred until the project owner returns with the cluster's admin
-connection string. Everything upstream of the database — schema, ingestion
-adapters, discovery logic, the web app's data layer and UI — is complete and
-independently verified (ingestor tests pass; discovery has been run against
-the live CAA site). See docs/deployment.md#deferred-database-setup for the
-exact remaining steps.
+CockroachDB Cloud (cluster `woeful-climber`, database
+`flight_intelligence`) is provisioned and connected — see
+docs/deployment.md#database-setup-completed for the roles, grants, and
+schema-application approach. No historical CAA data has been backfilled
+yet; that's a deliberate next step (see docs/ingestion.md).

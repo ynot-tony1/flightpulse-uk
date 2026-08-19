@@ -4,9 +4,9 @@ UK aviation intelligence, built entirely from official UK Civil Aviation
 Authority statistics: airport traffic, routes, punctuality and airline
 activity, with a live interactive route map.
 
-> **Status:** application, ingestion pipeline, CI and Vercel deployment are
-> live. CockroachDB Cloud provisioning is a deliberately deferred step —
-> see [Database status](#database-status) below.
+> **Status:** application, ingestion pipeline, CI, Vercel deployment and
+> CockroachDB Cloud are all live and connected. Historical CAA data has not
+> been backfilled yet — see [Database status](#database-status) below.
 
 **Live URL:** https://flightpulse-uk.vercel.app
 
@@ -127,24 +127,25 @@ manual-only and requires a typed confirmation input.
 - **Vercel** — project `flightpulse-uk`, root directory `apps/web`, linked
   via Vercel's native GitHub integration (PR → preview, `main` →
   production).
-- **CockroachDB Cloud** — cluster `safe-hippo`, database
+- **CockroachDB Cloud** — cluster `woeful-climber`, database
   `flight_intelligence`.
 
 ## Database status
 
-CockroachDB Cloud provisioning was **intentionally deferred** — at the
-project owner's request, everything else was built and verified first, and
-the database step happens when they return with the cluster's admin
-connection string. Until then:
+CockroachDB Cloud is provisioned and connected: cluster `woeful-climber`,
+database `flight_intelligence`, schema applied (13 application tables),
+three least-privilege roles (`flight_migrator`, `flight_ingestor`,
+`flight_app`) created and verified individually. `DATABASE_URL` is set in
+Vercel (read-only `flight_app` connection); `INGEST_DATABASE_URL` and
+`MIGRATION_DATABASE_URL` are set as GitHub Actions secrets. See
+[`docs/deployment.md#database-setup-completed`](docs/deployment.md#database-setup-completed)
+for the exact grants and how to apply future schema changes.
 
-- Every page and API route renders correctly and shows an explicit
-  "Database connection not yet configured" state rather than fabricated
-  data (see `lib/db.ts` — `withDatabase()`).
-- `prisma generate`, the full Next.js production build, all unit/e2e tests,
-  and the Docker ingestion image all run and pass without a live database.
-- The exact remaining steps (create database, least-privilege roles, apply
-  migrations, set secrets, run the calibration import) are documented in
-  [`docs/deployment.md#deferred-database-setup`](docs/deployment.md#deferred-database-setup).
+No historical CAA data has been imported yet — that's the next step (see
+[`docs/ingestion.md`](docs/ingestion.md) and the calibration-import note in
+[`docs/deployment.md`](docs/deployment.md)). Until an import runs, pages
+show the database as connected but with zero records — never fabricated
+figures.
 
 ## Testing
 

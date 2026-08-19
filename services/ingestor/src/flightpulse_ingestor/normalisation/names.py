@@ -60,6 +60,9 @@ class AirportAliasRegistry:
             return None
         return self._by_normalised_name.get(key)
 
+    def reviewed_entries(self) -> list[AirportAliasEntry]:
+        return [e for e in self._by_normalised_name.values() if e.reviewed]
+
     def is_known_unresolved(self, caa_name: str) -> bool:
         return normalise_name(caa_name) in self._unresolved
 

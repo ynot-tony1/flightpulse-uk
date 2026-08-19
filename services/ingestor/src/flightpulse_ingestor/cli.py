@@ -250,6 +250,22 @@ def refresh_airport_reference(dry_run: bool = typer.Option(False)) -> None:
         for r in records[:5]:
             coords = f"({r.latitude:.4f}, {r.longitude:.4f})"
             typer.echo(f"  {r.icao_code or '----'} {r.iata_code or '---'} {r.name} {coords}")
+        return
+
+    from flightpulse_ingestor.commands import persist
+
+    alias_registry = AirportAliasRegistry.load(CONFIG_DIR / "airport-aliases.yml")
+    try:
+        with connect(settings) as conn:
+            summary = persist.persist_airport_reference(conn, reference_records=records, alias_registry=alias_registry)
+        typer.echo(
+            json.dumps(
+                {"airports_upserted": summary.rows_inserted, "no_ourairports_match": summary.rows_skipped},
+                indent=2,
+            )
+        )
+    except DatabaseNotConfiguredError as exc:
+        typer.echo(str(exc))
 
 
 @app.command("import-airports")
@@ -343,13 +359,31 @@ def _report_run(result: AdapterRunResult) -> None:
 
 
 def _persist_or_warn(result: AdapterRunResult, settings: IngestorSettings) -> None:
+    from flightpulse_ingestor.commands import persist
+
     try:
-        with connect(settings):
-            typer.echo(
-                "Database write path is implemented in database/upserts.py but the "
-                "per-adapter persist step is intentionally not wired up until "
-                "CockroachDB provisioning (section 65) is complete — see docs/deployment.md."
+        with connect(settings) as conn:
+            if result.dataset_code == "caa_airport_statistics":
+                summary = persist.persist_airport_statistics(conn, CONFIG_DIR, result)
+            elif result.dataset_code == "caa_punctuality_statistics":
+                summary = persist.persist_punctuality(conn, CONFIG_DIR, result)
+            elif result.dataset_code == "caa_airline_statistics":
+                summary = persist.persist_airlines(conn, CONFIG_DIR, result)
+            else:
+                typer.echo(f"No persist handler for dataset {result.dataset_code!r}")
+                return
+        typer.echo(
+            json.dumps(
+                {
+                    "persisted": {
+                        "inserted": summary.rows_inserted,
+                        "updated": summary.rows_updated,
+                        "skipped_unresolved_airport": summary.rows_skipped,
+                    }
+                },
+                indent=2,
             )
+        )
     except DatabaseNotConfiguredError as exc:
         typer.echo(str(exc))
 

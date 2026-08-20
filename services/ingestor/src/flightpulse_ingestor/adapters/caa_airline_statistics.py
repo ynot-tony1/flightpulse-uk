@@ -89,6 +89,16 @@ class AirlineStatisticsAdapter:
                 )
                 continue
 
+            # Some CAA months emit more than one row for the same airline
+            # within a single "All Services" style table (seen live for
+            # table_03, Jan-Apr 2026: one plausible total plus one row two
+            # orders of magnitude smaller). The (airline, year_month) unique
+            # constraint on service_category doesn't catch this because it's
+            # two distinct rows in one run, not a re-import — so within a
+            # single table's rows, keep only the largest value per airline
+            # and reject the rest rather than writing conflicting rows.
+            best_index_by_airline: dict[str, int] = {}
+
             for i, row in enumerate(rows):
                 result.validation.rows_seen += 1
                 caa_name = row.get(airline_col, "").strip()
@@ -108,19 +118,42 @@ class AirlineStatisticsAdapter:
                     continue
 
                 result.validation.rows_valid += 1
-                result.records.append(
-                    ParsedRecord(
-                        kind="airline_monthly_metric",
-                        payload={
-                            "canonical_name": alias.canonical_name,
-                            "metric_code": metric_code,
-                            "value": value,
-                            "unit": unit,
-                            "service_category": service_category,
-                            "source_table": link.table_code,
-                        },
-                        source_row_number=i,
-                    )
+                record = ParsedRecord(
+                    kind="airline_monthly_metric",
+                    payload={
+                        "canonical_name": alias.canonical_name,
+                        "metric_code": metric_code,
+                        "value": value,
+                        "unit": unit,
+                        "service_category": service_category,
+                        "source_table": link.table_code,
+                    },
+                    source_row_number=i,
                 )
+
+                existing_index = best_index_by_airline.get(alias.canonical_name)
+                if existing_index is not None:
+                    existing_record = result.records[existing_index]
+                    existing_value = existing_record.payload["value"]
+                    assert isinstance(existing_value, float)
+                    if value <= existing_value:
+                        result.validation.reject(
+                            i,
+                            value_col,
+                            f"{link.table_code}: duplicate row for {alias.canonical_name!r} "
+                            f"(value {value} <= already-kept value {existing_value})",
+                        )
+                        continue
+                    result.validation.reject(
+                        existing_record.source_row_number,
+                        value_col,
+                        f"{link.table_code}: duplicate row for {alias.canonical_name!r} "
+                        f"(value {existing_value} superseded by larger value {value})",
+                    )
+                    result.records[existing_index] = record
+                    continue
+
+                best_index_by_airline[alias.canonical_name] = len(result.records)
+                result.records.append(record)
 
         return result

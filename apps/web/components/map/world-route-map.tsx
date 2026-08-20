@@ -199,6 +199,7 @@ export function WorldRouteMap({
   const [airports, setAirports] = useState<MapAirportPoint[]>([]);
   const [routes, setRoutes] = useState<MapRouteArc[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [themeTick, setThemeTick] = useState(0);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -222,7 +223,10 @@ export function WorldRouteMap({
       setLoaded(true);
     });
 
-    const themeObserver = new MutationObserver(() => applyBasemapTheme(map));
+    const themeObserver = new MutationObserver(() => {
+      applyBasemapTheme(map);
+      setThemeTick((t) => t + 1);
+    });
     themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["data-theme"],
@@ -353,6 +357,7 @@ export function WorldRouteMap({
     connectedCodes,
     maxMetric,
     maxRoutePassengers,
+    themeTick,
   ]);
 
   const selected = airports.find((a) => a.code === selectedAirport) ?? null;

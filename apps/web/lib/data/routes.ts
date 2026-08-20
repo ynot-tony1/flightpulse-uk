@@ -3,7 +3,10 @@ import { withDatabase } from "@/lib/db";
 export async function getLatestRoutePeriod() {
   return withDatabase(async (db) => {
     const release = await db.ingestionSourceRelease.findFirst({
-      where: { status: "imported", sourceDataset: { datasetCode: "caa_airport_statistics" } },
+      where: {
+        status: "imported",
+        sourceDataset: { datasetCode: "caa_airport_statistics" },
+      },
       orderBy: [{ year: "desc" }, { month: "desc" }],
     });
     return release ? { year: release.year, month: release.month } : null;

@@ -44,19 +44,33 @@ export default async function PunctualityPage() {
                 </thead>
                 <tbody>
                   {result.data.map((row) => (
-                    <tr key={row.id} className="border-b border-border last:border-0 hover:bg-paper-subtle">
+                    <tr
+                      key={row.id}
+                      className="border-b border-border last:border-0 hover:bg-paper-subtle"
+                    >
                       <td className="px-4 py-3 font-medium text-ink">
-                        <Link href={`/airports/${row.airport.canonicalCode}`} className="hover:text-sky-500">
+                        <Link
+                          href={`/airports/${row.airport.canonicalCode}`}
+                          className="hover:text-sky-500"
+                        >
                           {row.airport.displayName}
                         </Link>
                       </td>
-                      <td className="px-4 py-3 text-ink-muted">{formatMonthYear(row.year, row.month)}</td>
-                      <td className="px-4 py-3 tabular-nums text-ink-muted">{row.flightsMatched ?? "—"}</td>
-                      <td className="px-4 py-3 tabular-nums text-ink-muted">
-                        {row.averageDelayMinutes != null ? `${row.averageDelayMinutes.toFixed(1)} min` : "—"}
+                      <td className="px-4 py-3 text-ink-muted">
+                        {formatMonthYear(row.year, row.month)}
                       </td>
                       <td className="px-4 py-3 tabular-nums text-ink-muted">
-                        {row.onTimePercentage != null ? formatPercentage(row.onTimePercentage) : "—"}
+                        {row.flightsMatched ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 tabular-nums text-ink-muted">
+                        {row.averageDelayMinutes != null
+                          ? `${row.averageDelayMinutes.toFixed(1)} min`
+                          : "—"}
+                      </td>
+                      <td className="px-4 py-3 tabular-nums text-ink-muted">
+                        {row.onTimePercentage != null
+                          ? formatPercentage(row.onTimePercentage)
+                          : "—"}
                       </td>
                     </tr>
                   ))}

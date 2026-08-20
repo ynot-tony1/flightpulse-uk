@@ -8,13 +8,28 @@ import type { Metadata } from "next";
 export const metadata: Metadata = { title: "Compare" };
 export const dynamic = "force-dynamic";
 
-function Row({ label, unit = "", values, format }: { label: string; unit?: string; values: (number | null)[]; format?: (n: number) => string }) {
+function Row({
+  label,
+  unit = "",
+  values,
+  format,
+}: {
+  label: string;
+  unit?: string;
+  values: (number | null)[];
+  format?: (n: number) => string;
+}) {
   return (
     <tr className="border-b border-border last:border-0">
       <td className="px-4 py-3 text-sm font-medium text-ink-muted">{label}</td>
       {values.map((v, i) => (
-        <td key={i} className="px-4 py-3 text-right tabular-nums text-sm text-ink">
-          {v != null ? `${format ? format(v) : formatCompactNumber(v)}${unit}` : "—"}
+        <td
+          key={i}
+          className="px-4 py-3 text-right tabular-nums text-sm text-ink"
+        >
+          {v != null
+            ? `${format ? format(v) : formatCompactNumber(v)}${unit}`
+            : "—"}
         </td>
       ))}
     </tr>
@@ -33,12 +48,17 @@ export default async function ComparePage({
     .filter(Boolean)
     .slice(0, 4);
 
-  const result = codes.length >= 2 ? await getAirportComparison(codes) : { status: "unavailable" as const, reason: "need at least 2 codes" };
+  const result =
+    codes.length >= 2
+      ? await getAirportComparison(codes)
+      : { status: "unavailable" as const, reason: "need at least 2 codes" };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-2 border-b border-border pb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Compare airports</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Compare airports
+        </h1>
         <p className="max-w-2xl text-ink-muted">
           Select 2–4 airports to compare passenger traffic, movements,
           punctuality and route networks side by side. FlightPulse UK does not
@@ -49,7 +69,10 @@ export default async function ComparePage({
 
       <form className="flex flex-wrap items-end gap-3 py-6" method="get">
         <div className="flex flex-col gap-1">
-          <label htmlFor="airports" className="text-xs font-medium text-ink-muted">
+          <label
+            htmlFor="airports"
+            className="text-xs font-medium text-ink-muted"
+          >
             Airport codes (comma-separated, 2–4)
           </label>
           <input
@@ -60,7 +83,10 @@ export default async function ComparePage({
             className="w-72 rounded-md border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-sky-500"
           />
         </div>
-        <button type="submit" className="rounded-md bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600">
+        <button
+          type="submit"
+          className="rounded-md bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600"
+        >
           Compare
         </button>
       </form>
@@ -76,20 +102,47 @@ export default async function ComparePage({
                   <tr className="border-b border-border bg-paper-subtle text-xs uppercase tracking-wide text-ink-faint">
                     <th className="px-4 py-3 font-medium">Metric</th>
                     {result.data.map((a) => (
-                      <th key={a.canonicalCode} className="px-4 py-3 text-right font-medium">
+                      <th
+                        key={a.canonicalCode}
+                        className="px-4 py-3 text-right font-medium"
+                      >
                         {a.displayName}
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  <Row label="Terminal passengers" values={result.data.map((a) => a.terminalPassengers)} />
-                  <Row label="Aircraft movements" values={result.data.map((a) => a.aircraftMovements)} />
-                  <Row label="Domestic passengers" values={result.data.map((a) => a.domesticPassengers)} />
-                  <Row label="International passengers" values={result.data.map((a) => a.internationalPassengers)} />
-                  <Row label="Freight" unit=" t" values={result.data.map((a) => a.freightTonnes)} />
-                  <Row label="Routes represented" values={result.data.map((a) => a.routeCount)} />
-                  <Row label="Average delay" unit=" min" values={result.data.map((a) => a.averageDelayMinutes)} format={(n) => n.toFixed(1)} />
+                  <Row
+                    label="Terminal passengers"
+                    values={result.data.map((a) => a.terminalPassengers)}
+                  />
+                  <Row
+                    label="Aircraft movements"
+                    values={result.data.map((a) => a.aircraftMovements)}
+                  />
+                  <Row
+                    label="Domestic passengers"
+                    values={result.data.map((a) => a.domesticPassengers)}
+                  />
+                  <Row
+                    label="International passengers"
+                    values={result.data.map((a) => a.internationalPassengers)}
+                  />
+                  <Row
+                    label="Freight"
+                    unit=" t"
+                    values={result.data.map((a) => a.freightTonnes)}
+                  />
+                  <Row
+                    label="Routes represented"
+                    values={result.data.map((a) => a.routeCount)}
+                  />
+                  <Row
+                    label="Average delay"
+                    unit=" min"
+                    values={result.data.map((a) => a.averageDelayMinutes)}
+                    format={(n) => n.toFixed(1)}
+                  />
                   <Row
                     label="On-time performance"
                     values={result.data.map((a) => a.onTimePercentage)}
@@ -101,9 +154,14 @@ export default async function ComparePage({
           </Card>
 
           <Card className="p-5">
-            <h3 className="mb-3 text-sm font-semibold text-ink">Terminal passengers</h3>
+            <h3 className="mb-3 text-sm font-semibold text-ink">
+              Terminal passengers
+            </h3>
             <RankingBarChart
-              data={result.data.map((a) => ({ label: a.displayName.replace(/ Airport$/, ""), value: a.terminalPassengers ?? 0 }))}
+              data={result.data.map((a) => ({
+                label: a.displayName.replace(/ Airport$/, ""),
+                value: a.terminalPassengers ?? 0,
+              }))}
               valueLabel="Passengers"
             />
           </Card>

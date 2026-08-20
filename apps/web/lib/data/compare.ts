@@ -24,7 +24,9 @@ const METRIC_CODES = [
 export async function getAirportComparison(codes: string[]) {
   return withDatabase(async (db) => {
     const upperCodes = codes.map((c) => c.toUpperCase());
-    const airports = await db.airport.findMany({ where: { canonicalCode: { in: upperCodes } } });
+    const airports = await db.airport.findMany({
+      where: { canonicalCode: { in: upperCodes } },
+    });
     if (airports.length === 0) return [];
 
     const rows: AirportComparisonRow[] = [];
@@ -52,9 +54,16 @@ export async function getAirportComparison(codes: string[]) {
 
       const { year, month } = latestMetric;
       const metrics = await db.airportMonthlyMetric.findMany({
-        where: { airportId: airport.id, year, month, metricCode: { in: [...METRIC_CODES] } },
+        where: {
+          airportId: airport.id,
+          year,
+          month,
+          metricCode: { in: [...METRIC_CODES] },
+        },
       });
-      const byCode = Object.fromEntries(metrics.map((m) => [m.metricCode, m.value]));
+      const byCode = Object.fromEntries(
+        metrics.map((m) => [m.metricCode, m.value]),
+      );
 
       const punctuality = await db.punctualityMetric.findFirst({
         where: { airportId: airport.id, destinationAirportId: null },
@@ -62,7 +71,16 @@ export async function getAirportComparison(codes: string[]) {
       });
 
       const routeCount = await db.routeMonthlyMetric.count({
-        where: { year, month, route: { OR: [{ originAirportId: airport.id }, { destinationAirportId: airport.id }] } },
+        where: {
+          year,
+          month,
+          route: {
+            OR: [
+              { originAirportId: airport.id },
+              { destinationAirportId: airport.id },
+            ],
+          },
+        },
       });
 
       rows.push({
@@ -79,6 +97,8 @@ export async function getAirportComparison(codes: string[]) {
       });
     }
 
-    return upperCodes.map((code) => rows.find((r) => r.canonicalCode === code)).filter((r): r is AirportComparisonRow => !!r);
+    return upperCodes
+      .map((code) => rows.find((r) => r.canonicalCode === code))
+      .filter((r): r is AirportComparisonRow => !!r);
   });
 }

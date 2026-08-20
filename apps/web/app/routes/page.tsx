@@ -17,11 +17,16 @@ export default async function RoutesPage({
   const params = await searchParams;
 
   if (params.origin && params.destination) {
-    redirect(`/routes/${params.origin.toUpperCase()}/${params.destination.toUpperCase()}`);
+    redirect(
+      `/routes/${params.origin.toUpperCase()}/${params.destination.toUpperCase()}`,
+    );
   }
 
   const period = await getLatestRoutePeriod();
-  const topRoutes = period.status === "ok" ? await listTopRoutes(period.data, 25) : { status: "unavailable" as const, reason: "" };
+  const topRoutes =
+    period.status === "ok"
+      ? await listTopRoutes(period.data, 25)
+      : { status: "unavailable" as const, reason: "" };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -36,7 +41,10 @@ export default async function RoutesPage({
 
       <form className="flex flex-wrap items-end gap-3 py-6" method="get">
         <div className="flex flex-col gap-1">
-          <label htmlFor="origin" className="text-xs font-medium text-ink-muted">
+          <label
+            htmlFor="origin"
+            className="text-xs font-medium text-ink-muted"
+          >
             Origin
           </label>
           <input
@@ -48,7 +56,10 @@ export default async function RoutesPage({
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="destination" className="text-xs font-medium text-ink-muted">
+          <label
+            htmlFor="destination"
+            className="text-xs font-medium text-ink-muted"
+          >
             Destination
           </label>
           <input
@@ -72,7 +83,11 @@ export default async function RoutesPage({
       ) : (
         <>
           <p className="pb-3 text-sm text-ink-muted">
-            Top routes by passenger volume, {period.status === "ok" && period.data ? formatMonthYear(period.data.year, period.data.month) : ""}.
+            Top routes by passenger volume,{" "}
+            {period.status === "ok" && period.data
+              ? formatMonthYear(period.data.year, period.data.month)
+              : ""}
+            .
           </p>
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
@@ -86,18 +101,26 @@ export default async function RoutesPage({
                 </thead>
                 <tbody>
                   {topRoutes.data.map((rm) => (
-                    <tr key={rm.id} className="border-b border-border last:border-0 hover:bg-paper-subtle">
+                    <tr
+                      key={rm.id}
+                      className="border-b border-border last:border-0 hover:bg-paper-subtle"
+                    >
                       <td className="px-4 py-3 font-medium text-ink">
                         <Link
                           href={`/routes/${rm.route.originAirport.canonicalCode}/${rm.route.destinationAirport.canonicalCode}`}
                           className="hover:text-sky-500"
                         >
-                          {rm.route.originAirport.displayName} → {rm.route.destinationAirport.displayName}
+                          {rm.route.originAirport.displayName} →{" "}
+                          {rm.route.destinationAirport.displayName}
                         </Link>
                       </td>
-                      <td className="px-4 py-3 capitalize text-ink-muted">{rm.route.routeType}</td>
+                      <td className="px-4 py-3 capitalize text-ink-muted">
+                        {rm.route.routeType}
+                      </td>
                       <td className="px-4 py-3 tabular-nums text-ink-muted">
-                        {rm.passengers != null ? formatCompactNumber(rm.passengers) : "—"}
+                        {rm.passengers != null
+                          ? formatCompactNumber(rm.passengers)
+                          : "—"}
                       </td>
                     </tr>
                   ))}

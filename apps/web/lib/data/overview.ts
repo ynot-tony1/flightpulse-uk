@@ -29,10 +29,18 @@ async function latestImportedRelease(db: PrismaClient, datasetCode: string) {
   });
 }
 
-export async function getOverviewSummary(): Promise<DataResult<OverviewSummary>> {
+export async function getOverviewSummary(): Promise<
+  DataResult<OverviewSummary>
+> {
   return withDatabase(async (db) => {
-    const airportRelease = await latestImportedRelease(db, "caa_airport_statistics");
-    const punctualityRelease = await latestImportedRelease(db, "caa_punctuality_statistics");
+    const airportRelease = await latestImportedRelease(
+      db,
+      "caa_airport_statistics",
+    );
+    const punctualityRelease = await latestImportedRelease(
+      db,
+      "caa_punctuality_statistics",
+    );
 
     if (!airportRelease) {
       return {
@@ -49,26 +57,36 @@ export async function getOverviewSummary(): Promise<DataResult<OverviewSummary>>
 
     const { year, month } = airportRelease;
 
-    const [passengers, movements, routeCount, airportCount] = await Promise.all([
-      db.airportMonthlyMetric.aggregate({
-        where: { year, month, metricCode: "terminal_passengers" },
-        _sum: { value: true },
-      }),
-      db.airportMonthlyMetric.aggregate({
-        where: { year, month, metricCode: "aircraft_movements_total" },
-        _sum: { value: true },
-      }),
-      db.routeMonthlyMetric.count({ where: { year, month } }),
-      db.airport.count({ where: { caaReportingAirport: true } }),
-    ]);
+    const [passengers, movements, routeCount, airportCount] = await Promise.all(
+      [
+        db.airportMonthlyMetric.aggregate({
+          where: { year, month, metricCode: "terminal_passengers" },
+          _sum: { value: true },
+        }),
+        db.airportMonthlyMetric.aggregate({
+          where: { year, month, metricCode: "aircraft_movements_total" },
+          _sum: { value: true },
+        }),
+        db.routeMonthlyMetric.count({ where: { year, month } }),
+        db.airport.count({ where: { caaReportingAirport: true } }),
+      ],
+    );
 
     let averageDelayMinutes: number | null = null;
     let onTimePercentage: number | null = null;
 
     if (punctualityRelease) {
       const punctuality = await db.punctualityMetric.findMany({
-        where: { year: punctualityRelease.year, month: punctualityRelease.month, destinationAirportId: null },
-        select: { averageDelayMinutes: true, onTimePercentage: true, flightsMatched: true },
+        where: {
+          year: punctualityRelease.year,
+          month: punctualityRelease.month,
+          destinationAirportId: null,
+        },
+        select: {
+          averageDelayMinutes: true,
+          onTimePercentage: true,
+          flightsMatched: true,
+        },
       });
 
       const weighted = punctuality.reduce(
@@ -87,8 +105,14 @@ export async function getOverviewSummary(): Promise<DataResult<OverviewSummary>>
         { delaySum: 0, delayWeight: 0, onTimeSum: 0, onTimeWeight: 0 },
       );
 
-      averageDelayMinutes = weighted.delayWeight > 0 ? weighted.delaySum / weighted.delayWeight : null;
-      onTimePercentage = weighted.onTimeWeight > 0 ? weighted.onTimeSum / weighted.onTimeWeight : null;
+      averageDelayMinutes =
+        weighted.delayWeight > 0
+          ? weighted.delaySum / weighted.delayWeight
+          : null;
+      onTimePercentage =
+        weighted.onTimeWeight > 0
+          ? weighted.onTimeSum / weighted.onTimeWeight
+          : null;
     }
 
     return {
@@ -99,16 +123,31 @@ export async function getOverviewSummary(): Promise<DataResult<OverviewSummary>>
       airportCount,
       averageDelayMinutes,
       onTimePercentage,
-      latestUpdatePublicationDate: airportRelease.publicationDate?.toISOString() ?? null,
+      latestUpdatePublicationDate:
+        airportRelease.publicationDate?.toISOString() ?? null,
     };
   });
 }
 
 const MONTH_ABBR = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
-export async function getMetricTrend(metricCode: string, months = 24): Promise<DataResult<TrendPoint[]>> {
+export async function getMetricTrend(
+  metricCode: string,
+  months = 24,
+): Promise<DataResult<TrendPoint[]>> {
   return withDatabase(async (db) => {
     const rows = await db.airportMonthlyMetric.groupBy({
       by: ["year", "month"],
@@ -124,19 +163,32 @@ export async function getMetricTrend(metricCode: string, months = 24): Promise<D
   });
 }
 
-export async function getTopAirportsByMetric(metricCode: string, limit = 10): Promise<DataResult<RankingPoint[]>> {
+export async function getTopAirportsByMetric(
+  metricCode: string,
+  limit = 10,
+): Promise<DataResult<RankingPoint[]>> {
   return withDatabase(async (db) => {
-    const airportRelease = await latestImportedRelease(db, "caa_airport_statistics");
+    const airportRelease = await latestImportedRelease(
+      db,
+      "caa_airport_statistics",
+    );
     if (!airportRelease) return [];
 
     const rows = await db.airportMonthlyMetric.findMany({
-      where: { year: airportRelease.year, month: airportRelease.month, metricCode },
+      where: {
+        year: airportRelease.year,
+        month: airportRelease.month,
+        metricCode,
+      },
       orderBy: { value: "desc" },
       take: limit,
       include: { airport: { select: { displayName: true } } },
     });
 
-    return rows.map((r) => ({ label: r.airport.displayName.replace(/ Airport$/, ""), value: r.value }));
+    return rows.map((r) => ({
+      label: r.airport.displayName.replace(/ Airport$/, ""),
+      value: r.value,
+    }));
   });
 }
 
@@ -147,16 +199,33 @@ export async function getPunctualityTrend(
   return withDatabase(async (db) => {
     const rows = await db.punctualityMetric.findMany({
       where: { destinationAirportId: null },
-      select: { year: true, month: true, averageDelayMinutes: true, onTimePercentage: true, flightsMatched: true },
+      select: {
+        year: true,
+        month: true,
+        averageDelayMinutes: true,
+        onTimePercentage: true,
+        flightsMatched: true,
+      },
     });
 
-    const byPeriod = new Map<string, { sum: number; weight: number; year: number; month: number }>();
+    const byPeriod = new Map<
+      string,
+      { sum: number; weight: number; year: number; month: number }
+    >();
     for (const r of rows) {
-      const value = metric === "averageDelayMinutes" ? r.averageDelayMinutes : r.onTimePercentage;
+      const value =
+        metric === "averageDelayMinutes"
+          ? r.averageDelayMinutes
+          : r.onTimePercentage;
       const weight = r.flightsMatched ?? 0;
       if (value == null || weight <= 0) continue;
       const key = `${r.year}-${r.month}`;
-      const bucket = byPeriod.get(key) ?? { sum: 0, weight: 0, year: r.year, month: r.month };
+      const bucket = byPeriod.get(key) ?? {
+        sum: 0,
+        weight: 0,
+        year: r.year,
+        month: r.month,
+      };
       bucket.sum += value * weight;
       bucket.weight += weight;
       byPeriod.set(key, bucket);
@@ -178,23 +247,39 @@ export interface TrafficSplit {
   international: number;
 }
 
-export async function getTrafficSplit(): Promise<DataResult<TrafficSplit | null>> {
+export async function getTrafficSplit(): Promise<
+  DataResult<TrafficSplit | null>
+> {
   return withDatabase(async (db) => {
-    const airportRelease = await latestImportedRelease(db, "caa_airport_statistics");
+    const airportRelease = await latestImportedRelease(
+      db,
+      "caa_airport_statistics",
+    );
     if (!airportRelease) return null;
 
     const [domestic, international] = await Promise.all([
       db.airportMonthlyMetric.aggregate({
-        where: { year: airportRelease.year, month: airportRelease.month, metricCode: "domestic_passengers" },
+        where: {
+          year: airportRelease.year,
+          month: airportRelease.month,
+          metricCode: "domestic_passengers",
+        },
         _sum: { value: true },
       }),
       db.airportMonthlyMetric.aggregate({
-        where: { year: airportRelease.year, month: airportRelease.month, metricCode: "international_passengers" },
+        where: {
+          year: airportRelease.year,
+          month: airportRelease.month,
+          metricCode: "international_passengers",
+        },
         _sum: { value: true },
       }),
     ]);
 
     if (!domestic._sum.value && !international._sum.value) return null;
-    return { domestic: domestic._sum.value ?? 0, international: international._sum.value ?? 0 };
+    return {
+      domestic: domestic._sum.value ?? 0,
+      international: international._sum.value ?? 0,
+    };
   });
 }

@@ -30,6 +30,33 @@ export async function listTopRoutes(
   });
 }
 
+export async function getAirportDestinations(
+  airportId: string,
+  period: { year: number; month: number } | null,
+  limit = 10,
+) {
+  return withDatabase(async (db) => {
+    if (!period) return [];
+    return db.routeMonthlyMetric.findMany({
+      where: {
+        year: period.year,
+        month: period.month,
+        route: {
+          OR: [
+            { originAirportId: airportId },
+            { destinationAirportId: airportId },
+          ],
+        },
+      },
+      orderBy: { passengers: "desc" },
+      take: limit,
+      include: {
+        route: { include: { originAirport: true, destinationAirport: true } },
+      },
+    });
+  });
+}
+
 export async function getRouteByAirportCodes(
   originCode: string,
   destinationCode: string,

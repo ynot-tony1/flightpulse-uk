@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Nav } from "@/components/layout/nav";
 import { Footer } from "@/components/layout/footer";
 import { ThemeScript } from "@/components/layout/theme-script";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,12 +18,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "FlightPulse UK — UK Aviation Intelligence",
     template: "%s · FlightPulse UK",
   },
   description:
     "Explore UK airport traffic, routes, airline activity and flight punctuality using official CAA statistics.",
+  openGraph: {
+    type: "website",
+    siteName: "FlightPulse UK",
+    title: "FlightPulse UK — UK Aviation Intelligence",
+    description:
+      "Explore UK airport traffic, routes, airline activity and flight punctuality using official CAA statistics.",
+  },
+  twitter: {
+    card: "summary",
+    title: "FlightPulse UK — UK Aviation Intelligence",
+    description:
+      "Explore UK airport traffic, routes, airline activity and flight punctuality using official CAA statistics.",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

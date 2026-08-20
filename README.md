@@ -141,24 +141,31 @@ Vercel (read-only `flight_app` connection); `INGEST_DATABASE_URL` and
 [`docs/deployment.md#database-setup-completed`](docs/deployment.md#database-setup-completed)
 for the exact grants and how to apply future schema changes.
 
-**A real calibration import has run, and every page renders from it.** As of
-2026-08-20, the database holds: 20 UK airports (OurAirports reference data),
-four months of airport statistics (September–December 2025: ~200 metric
-rows and ~80 domestic routes per month), six months of punctuality
-(January–June 2026, 20 airport-level records each), and four months of
-airline statistics (January–April 2026, ~22 records each). These are real,
-verified CAA figures, not placeholders — e.g. Manchester's December 2025
-terminal passengers (2,367,746) is exactly what the CAA published for that
-period, and the route explorer's top domestic routes (Heathrow–Edinburgh at
-92.4k passengers, Heathrow–Glasgow at 81.7k) match the published table
-directly. The dashboard, airport/route/airline explorers, punctuality
-tables and the 2–4-airport compare view all read this live data — multi-year
-historical backfill is the remaining step (see
-[`docs/ingestion.md`](docs/ingestion.md) and the calibration note in
-[`docs/deployment.md`](docs/deployment.md));
-pages for periods
-without imported data show an explicit empty state, never a fabricated
-figure.
+**A full 12-month backfill has run, and every page renders from it.** As of
+2026-08-20, the database holds: 25 UK airports (OurAirports reference data,
+including the Crown Dependencies), 11 months of airport statistics
+(August 2025–June 2026, ~140-145 metric rows per month), 11 months of
+punctuality (August 2025–June 2026, 25 airport-level records per month
+plus, critically, **~190-210 route-level records per month** — over 2,100
+real route-level punctuality figures in total, computed as a flight-weighted
+average across every airline serving that route), and 10 months of airline
+statistics (August 2025–May 2026, ~16-27 records per month). Coverage stops
+where CAA's own publication schedule stops — airport/punctuality data isn't
+published past June 2026 yet, airline data past May 2026 — not because of
+any limit in this app. These are real, verified CAA figures, not
+placeholders — e.g. Manchester's December 2025 terminal passengers
+(2,367,746) is exactly what the CAA published for that period, and the
+route explorer's top domestic routes (Heathrow–Edinburgh at 92.4k
+passengers, Heathrow–Glasgow at 81.7k) match the published table directly.
+Route-level punctuality required discovering that CAA's "Summary Analysis"
+punctuality table never actually contains named-destination rows (only
+airport totals) — the real per-route detail lives in the separate "Full
+Analysis" table, one row per airport × destination × airline × service
+type, which this app aggregates itself rather than trusting a
+pre-aggregated figure that doesn't exist. The dashboard, airport/route/
+airline explorers, punctuality tables and the 2–4-airport compare view all
+read this live data; pages for periods without imported data show an
+explicit empty state, never a fabricated figure.
 
 ## Testing
 
@@ -185,19 +192,19 @@ excluded, never guessed). Full detail in
 
 ## Free-tier controls
 
-Historical scope is intentionally bounded at launch (five years of
-monthly airport/punctuality data, three years of airline data), and a
-calibration import (one month per family) is required before any larger
-backfill — see [`docs/operations.md`](docs/operations.md) and section 79 of
-the original build brief.
+Historical backfill is currently capped at what CAA has actually published
+(11-12 months as of 2026-08-20, not a deliberate free-tier limit) rather
+than a fixed multi-year window — CockroachDB Cloud's free tier has ample
+headroom at this scale. See [`docs/operations.md`](docs/operations.md) for
+storage/RU monitoring guidance if backfill is extended further back.
 
 ## Roadmap
 
-- Complete CockroachDB Cloud provisioning and the calibration import.
-- Wire the ingestor's database-write path (`database/upserts.py`) into the
-  CLI's persist step.
-- Expand `config/airport-aliases.yml` and `config/airline-aliases.yml`
-  beyond the reviewed seed set.
-- Parse the CAA "Full Analysis" punctuality tables for airline/direction
-  level detail.
-- Historical backfill, once calibration confirms storage/RU projections.
+- Extend backfill further back than August 2025, once CAA's archive access
+  for older periods is confirmed.
+- Resolve more airlines in `config/airline-aliases.yml` — route-level
+  punctuality currently aggregates across every airline on a route rather
+  than resolving each one individually, the same way airline-statistics
+  already does for the ~25 airlines it recognises.
+- Expand `config/airport-aliases.yml` beyond UK/Crown Dependency airports
+  currently reviewed, if further CAA tables reference more of them.

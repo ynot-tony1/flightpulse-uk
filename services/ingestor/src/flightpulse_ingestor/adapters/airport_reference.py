@@ -26,6 +26,12 @@ OURAIRPORTS_URL = "https://davidmegginson.github.io/ourairports-data/airports.cs
 
 RELEVANT_TYPES = {"large_airport", "medium_airport", "small_airport"}
 
+# CAA's published aviation statistics cover the Crown Dependencies (Jersey,
+# Isle of Man, Guernsey) alongside Great Britain — e.g. Jersey and Isle of
+# Man airports appear as named destinations in punctuality data — but
+# OurAirports tags them with their own ISO country codes, not "GB".
+UK_ISO_COUNTRY_CODES = {"GB", "JE", "IM", "GG"}
+
 
 @dataclass
 class ReferenceAirportRecord:
@@ -55,8 +61,8 @@ class AirportReferenceAdapter:
 
         text = downloaded.content.decode("utf-8")
         reader = csv.DictReader(io.StringIO(text))
-        rows = [row for row in reader if row.get("iso_country") == "GB"]
-        check_not_empty(len(rows), context="OurAirports airports.csv (GB rows)")
+        rows = [row for row in reader if row.get("iso_country") in UK_ISO_COUNTRY_CODES]
+        check_not_empty(len(rows), context="OurAirports airports.csv (UK + Crown Dependency rows)")
 
         records: list[ReferenceAirportRecord] = []
         for row in rows:

@@ -34,3 +34,29 @@ export async function listAirportPunctuality(
     });
   });
 }
+
+export async function getRoutePunctuality(
+  originAirportId: string,
+  destinationAirportId: string,
+  limit = 24,
+) {
+  return withDatabase(async (db) => {
+    // CAA's punctuality summary reports each route from the reporting
+    // airport's side only, so a route could be filed as either
+    // origin->destination or destination->origin depending on which one is
+    // the CAA-monitored reporting airport — check both directions.
+    return db.punctualityMetric.findMany({
+      where: {
+        OR: [
+          { airportId: originAirportId, destinationAirportId },
+          {
+            airportId: destinationAirportId,
+            destinationAirportId: originAirportId,
+          },
+        ],
+      },
+      orderBy: [{ year: "desc" }, { month: "desc" }],
+      take: limit,
+    });
+  });
+}

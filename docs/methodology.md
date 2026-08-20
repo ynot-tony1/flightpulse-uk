@@ -46,18 +46,33 @@ allowlisted-but-not-wired (documented in `config/caa-tables.yml`).
 
 ## Punctuality definitions
 
-Verified against a live CAA "Punctuality Statistics Summary Analysis" file
-(January 2026) on 2026-08-19. The file has **no airline column** — it is
-Reporting-Airport × Origin/Destination, with a sentinel row per airport
-(`Origin Destination = "AIRPORT TOTAL"`) for the airport-level aggregate and
-named-destination rows for route-level detail. Airline-level punctuality
-would require the CAA "Full Analysis" tables, which are allowlisted for a
-future release but not yet parsed.
+Verified live across several 2025-2026 "Punctuality Statistics Summary
+Analysis" files on 2026-08-20: despite the column layout appearing to
+support named-destination rows, in practice this table only ever contains
+three `Origin Destination` values — `"AIRPORT TOTAL"` (the airport-level
+aggregate FlightPulse UK imports), `"SCHEDULED FLIGHTS(ALL ROUTES)"` and
+`"CHARTERED FLIGHTS(ALL ROUTES)"` (aggregate rows, not real destinations —
+neither is imported). It has no airline column at all.
 
-- **Average delay**: CAA's own `Average Delay Minutes` column, used
-  directly. Never recomputed from the delay bands.
+Route-level punctuality instead comes from the CAA "Full Analysis" table —
+one row per reporting airport × destination × airline × scheduled/charter
+service. FlightPulse UK aggregates every airline's rows for a given route
+into a single flight-weighted figure (see weighted aggregation below),
+currently discarding the airline dimension rather than resolving every
+airline that has ever operated a UK route — a materially larger
+alias-matching surface than the ~25 airlines already reviewed for
+airline-statistics. International destinations in this table (routes to
+anywhere outside the UK/Crown Dependencies) are excluded, not fabricated.
+
+- **Average delay** (airport-level): CAA's own `Average Delay Minutes`
+  column, used directly. Never recomputed from the delay bands.
+- **Average delay** (route-level): no single CAA column exists at
+  route-level, since the source is one row per airline per route. Computed
+  as the flight-weighted average of each airline's own `average_delay_mins`
+  for that route (see weighted aggregation below) — never a plain mean
+  across airlines.
 - **On-time percentage**: CAA does not publish this as a single column in
-  the summary file. It is computed as the sum of two CAA-published band
+  either file. It is computed as the sum of two CAA-published band
   percentages: `Flights 15 minutes early to 1 minute early percent` +
   `Flights 0 (zero) to 15 minutes late percent` — i.e. the standard -15 to
   +15 minute window. If either band is missing for a row, `on_time_percentage`

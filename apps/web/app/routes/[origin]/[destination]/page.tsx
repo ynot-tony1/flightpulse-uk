@@ -1,5 +1,6 @@
 import { getRouteByAirportCodes } from "@/lib/data/routes";
 import { getAirportMonthlyMetrics } from "@/lib/data/airports";
+import { getRoutePunctuality } from "@/lib/data/punctuality";
 import { DatabasePendingNotice } from "@/components/ui/database-pending-notice";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ChartCard } from "@/components/charts/chart-card";
@@ -8,6 +9,8 @@ import { TrendLineChart } from "@/components/charts/trend-line-chart";
 import { RankingBarChart } from "@/components/charts/ranking-bar-chart";
 import {
   formatCompactNumber,
+  formatMonthYear,
+  formatPercentage,
   formatSignedPercentage,
   greatCircleDistanceKm,
   percentageChange,
@@ -79,7 +82,7 @@ export default async function RouteDetailPage({
       )
     : null;
 
-  const [originMetrics, destinationMetrics] = route
+  const [originMetrics, destinationMetrics, routePunctuality] = route
     ? await Promise.all([
         getAirportMonthlyMetrics(
           route.originAirportId,
@@ -91,8 +94,9 @@ export default async function RouteDetailPage({
           "terminal_passengers",
           1,
         ),
+        getRoutePunctuality(route.originAirportId, route.destinationAirportId),
       ])
-    : [null, null];
+    : [null, null, null];
   const originTotal =
     originMetrics && originMetrics.status === "ok"
       ? (originMetrics.data[0]?.value ?? null)
@@ -101,6 +105,10 @@ export default async function RouteDetailPage({
     destinationMetrics && destinationMetrics.status === "ok"
       ? (destinationMetrics.data[0]?.value ?? null)
       : null;
+  const punctualityHistory =
+    routePunctuality && routePunctuality.status === "ok"
+      ? routePunctuality.data
+      : [];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -180,10 +188,43 @@ export default async function RouteDetailPage({
           title="Punctuality history"
           description="Only shown where CAA publishes matching route-level punctuality."
         >
-          <EmptyState
-            title="No route-level punctuality data imported yet"
-            description="Only airport-level punctuality has been imported so far — route-level detail is a planned next step."
-          />
+          {punctualityHistory.length > 0 ? (
+            <div className="space-y-2">
+              {punctualityHistory.map((p) => {
+                const isOriginReporting =
+                  p.airportId === route?.originAirportId;
+                const legLabel = isOriginReporting
+                  ? `${route?.originAirport.canonicalCode} → ${route?.destinationAirport.canonicalCode}`
+                  : `${route?.destinationAirport.canonicalCode} → ${route?.originAirport.canonicalCode}`;
+                return (
+                  <div
+                    key={p.id}
+                    className="flex items-center justify-between border-b border-border py-2 text-sm last:border-0"
+                  >
+                    <span className="text-ink-muted">
+                      {formatMonthYear(p.year, p.month)}{" "}
+                      <span className="font-mono text-xs text-ink-faint">
+                        {legLabel}
+                      </span>
+                    </span>
+                    <span className="tabular-nums text-ink">
+                      {p.averageDelayMinutes != null
+                        ? `${p.averageDelayMinutes.toFixed(1)} min avg delay`
+                        : "—"}
+                      {p.onTimePercentage != null
+                        ? ` · ${formatPercentage(p.onTimePercentage)} on time`
+                        : ""}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <EmptyState
+              title="No route-level punctuality data for this route"
+              description="Only shown when CAA's published punctuality data includes this specific origin-destination pair."
+            />
+          )}
         </ChartCard>
         <ChartCard
           title="Airport comparison"

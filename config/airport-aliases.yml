@@ -131,9 +131,43 @@ aliases:
     icao: "EGHH"
     match_method: icao
     reviewed: true
+  - caa_name: "EXETER"
+    canonical_code: "EXT"
+    iata: "EXT"
+    icao: "EGTE"
+    match_method: icao
+    reviewed: true
+  - caa_name: "ISLE OF MAN"
+    canonical_code: "IOM"
+    iata: "IOM"
+    icao: "EGNS"
+    match_method: icao
+    reviewed: true
+  - caa_name: "JERSEY"
+    canonical_code: "JER"
+    iata: "JER"
+    icao: "EGJJ"
+    match_method: icao
+    reviewed: true
+  - caa_name: "SOUTHEND"
+    canonical_code: "SEN"
+    iata: "SEN"
+    icao: "EGMC"
+    match_method: icao
+    reviewed: true
+  - caa_name: "TEESSIDE INTERNATIONAL AIRPORT"
+    canonical_code: "MME"
+    iata: "MME"
+    icao: "EGNV"
+    match_method: icao
+    reviewed: true
 
 # Unresolved / ambiguous CAA destination text goes here for manual review
 # rather than being silently guessed (section 48).
 unresolved:
   - caa_name: "OTHER UK AIRPORTS (COMBINED)"
     reason: "CAA aggregate row spanning multiple small airports — cannot map to a single canonical airport"
+  - caa_name: "CHARTERED FLIGHTS(ALL ROUTES)"
+    reason: "CAA punctuality summary aggregate row for unlisted charter routes — not a specific destination"
+  - caa_name: "SCHEDULED FLIGHTS(ALL ROUTES)"
+    reason: "CAA punctuality summary aggregate row for unlisted scheduled routes — not a specific destination"

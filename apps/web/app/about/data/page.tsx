@@ -47,11 +47,15 @@ export default function MethodologyPage() {
 
       <Section title="CAA punctuality statistics">
         <p>
-          Average delay is CAA&apos;s own published figure, used directly.
-          On-time percentage is computed from CAA&apos;s delay-band percentages
-          using the standard ±15 minute window. Punctuality statistics cover
-          only the airports and routes CAA actually monitors — coverage is never
-          inferred or extrapolated to unmonitored airports.
+          Airport-level average delay is CAA&apos;s own published figure, used
+          directly. Route-level average delay has no single published figure —
+          CAA publishes it per airline per route, so FlightPulse UK computes a
+          flight-weighted average across every airline serving that route rather
+          than showing just one airline&apos;s number. On-time percentage (both
+          levels) is computed from CAA&apos;s delay-band percentages using the
+          standard ±15 minute window. Punctuality statistics cover only the
+          airports and routes CAA actually monitors — coverage is never inferred
+          or extrapolated to unmonitored airports.
         </p>
       </Section>
 
@@ -98,13 +102,18 @@ export default function MethodologyPage() {
             unresolved names are excluded rather than guessed.
           </li>
           <li>
-            Historical depth is intentionally limited at launch — a handful of
-            recent months per dataset — and is expanded incrementally as further
-            CAA releases are imported. See the{" "}
+            Historical depth reflects what CAA has published so far (roughly the
+            last 10-12 months as of launch) rather than a fixed limit, and
+            expands as further CAA releases are imported. See the{" "}
             <Link href="/status" className="underline hover:text-ink">
               status page
             </Link>{" "}
             for exactly which periods are currently loaded.
+          </li>
+          <li>
+            Route-level punctuality aggregates every airline serving a route
+            into one flight-weighted figure rather than resolving each airline
+            individually — see the CAA punctuality statistics section above.
           </li>
         </ul>
       </Section>

@@ -141,15 +141,21 @@ Vercel (read-only `flight_app` connection); `INGEST_DATABASE_URL` and
 [`docs/deployment.md#database-setup-completed`](docs/deployment.md#database-setup-completed)
 for the exact grants and how to apply future schema changes.
 
-**A real calibration import has run.** As of 2026-08-20, the database holds:
-20 UK airports (OurAirports reference data), December 2025 airport statistics
-(199 metric rows, 56 domestic/international routes), January 2026
-punctuality (20 airport-level records), and April 2026 airline statistics
-(22 records). These are real, verified CAA figures, not placeholders — e.g.
-Manchester's December 2025 terminal passengers (2,367,746) is exactly what
-the CAA published for that period. Multi-year historical backfill has not
-run yet — that's the next step (see [`docs/ingestion.md`](docs/ingestion.md)
-and the calibration note in [`docs/deployment.md`](docs/deployment.md));
+**A real calibration import has run, and every page renders from it.** As of
+2026-08-20, the database holds: 20 UK airports (OurAirports reference data),
+four months of airport statistics (September–December 2025: ~200 metric
+rows and ~80 domestic routes per month), six months of punctuality
+(January–June 2026, 20 airport-level records each), and four months of
+airline statistics (January–April 2026, ~22 records each). These are real,
+verified CAA figures, not placeholders — e.g. Manchester's December 2025
+terminal passengers (2,367,746) is exactly what the CAA published for that
+period, and the route explorer's top domestic routes (Heathrow–Edinburgh at
+92.4k passengers, Heathrow–Glasgow at 81.7k) match the published table
+directly. The dashboard, airport/route/airline explorers, punctuality
+tables and the 2–4-airport compare view all read this live data — multi-year
+historical backfill is the remaining step (see
+[`docs/ingestion.md`](docs/ingestion.md) and the calibration note in
+[`docs/deployment.md`](docs/deployment.md));
 pages for periods
 without imported data show an explicit empty state, never a fabricated
 figure.

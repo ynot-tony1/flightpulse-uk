@@ -50,3 +50,4 @@ apps/web/generated/
 coverage/
 playwright-report/
 test-results/
+.claude/

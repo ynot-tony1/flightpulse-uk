@@ -1,5 +1,6 @@
 import { listAirports } from "@/lib/data/airports";
 import { DatabasePendingNotice } from "@/components/ui/database-pending-notice";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Card } from "@/components/ui/card";
 import { formatCompactNumber } from "@flightpulse/shared";
 import Link from "next/link";
@@ -98,8 +99,21 @@ export default async function AirportsPage({
         </button>
       </form>
 
-      {result.status !== "ok" || result.data.items.length === 0 ? (
+      {result.status !== "ok" ? (
         <DatabasePendingNotice subject="Airport listings" />
+      ) : result.data.items.length === 0 ? (
+        <EmptyState
+          title={
+            params.q || params.nation
+              ? "No airports match your filters"
+              : "No airports found"
+          }
+          description={
+            params.q || params.nation
+              ? "Try a different name, IATA/ICAO code, or nation."
+              : "Airport listings will appear once CAA data has been imported."
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {result.data.items.map((airport) => (

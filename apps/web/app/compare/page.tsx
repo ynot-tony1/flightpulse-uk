@@ -1,4 +1,5 @@
 import { DatabasePendingNotice } from "@/components/ui/database-pending-notice";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Card } from "@/components/ui/card";
 import { RankingBarChart } from "@/components/charts/ranking-bar-chart";
 import { getAirportComparison } from "@/lib/data/compare";
@@ -48,10 +49,8 @@ export default async function ComparePage({
     .filter(Boolean)
     .slice(0, 4);
 
-  const result =
-    codes.length >= 2
-      ? await getAirportComparison(codes)
-      : { status: "unavailable" as const, reason: "need at least 2 codes" };
+  const result = codes.length >= 2 ? await getAirportComparison(codes) : null;
+  const rows = result && result.status === "ok" ? result.data : null;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -91,8 +90,18 @@ export default async function ComparePage({
         </button>
       </form>
 
-      {result.status !== "ok" || result.data.length < 2 ? (
+      {codes.length < 2 ? (
+        <EmptyState
+          title="Enter 2–4 airport codes"
+          description="Add at least two comma-separated IATA or ICAO codes above, e.g. LHR,MAN,EDI."
+        />
+      ) : !rows ? (
         <DatabasePendingNotice subject="Airport comparison" />
+      ) : rows.length < 2 ? (
+        <EmptyState
+          title="Not enough matching airports"
+          description={`Only ${rows.length} of the codes entered matched a known airport. Check the codes and try again.`}
+        />
       ) : (
         <div className="space-y-6">
           <Card className="overflow-hidden">
@@ -101,7 +110,7 @@ export default async function ComparePage({
                 <thead>
                   <tr className="border-b border-border bg-paper-subtle text-xs uppercase tracking-wide text-ink-faint">
                     <th className="px-4 py-3 font-medium">Metric</th>
-                    {result.data.map((a) => (
+                    {rows.map((a) => (
                       <th
                         key={a.canonicalCode}
                         className="px-4 py-3 text-right font-medium"
@@ -114,38 +123,38 @@ export default async function ComparePage({
                 <tbody>
                   <Row
                     label="Terminal passengers"
-                    values={result.data.map((a) => a.terminalPassengers)}
+                    values={rows.map((a) => a.terminalPassengers)}
                   />
                   <Row
                     label="Aircraft movements"
-                    values={result.data.map((a) => a.aircraftMovements)}
+                    values={rows.map((a) => a.aircraftMovements)}
                   />
                   <Row
                     label="Domestic passengers"
-                    values={result.data.map((a) => a.domesticPassengers)}
+                    values={rows.map((a) => a.domesticPassengers)}
                   />
                   <Row
                     label="International passengers"
-                    values={result.data.map((a) => a.internationalPassengers)}
+                    values={rows.map((a) => a.internationalPassengers)}
                   />
                   <Row
                     label="Freight"
                     unit=" t"
-                    values={result.data.map((a) => a.freightTonnes)}
+                    values={rows.map((a) => a.freightTonnes)}
                   />
                   <Row
                     label="Routes represented"
-                    values={result.data.map((a) => a.routeCount)}
+                    values={rows.map((a) => a.routeCount)}
                   />
                   <Row
                     label="Average delay"
                     unit=" min"
-                    values={result.data.map((a) => a.averageDelayMinutes)}
+                    values={rows.map((a) => a.averageDelayMinutes)}
                     format={(n) => n.toFixed(1)}
                   />
                   <Row
                     label="On-time performance"
-                    values={result.data.map((a) => a.onTimePercentage)}
+                    values={rows.map((a) => a.onTimePercentage)}
                     format={(n) => formatPercentage(n)}
                   />
                 </tbody>
@@ -158,7 +167,7 @@ export default async function ComparePage({
               Terminal passengers
             </h3>
             <RankingBarChart
-              data={result.data.map((a) => ({
+              data={rows.map((a) => ({
                 label: a.displayName.replace(/ Airport$/, ""),
                 value: a.terminalPassengers ?? 0,
               }))}

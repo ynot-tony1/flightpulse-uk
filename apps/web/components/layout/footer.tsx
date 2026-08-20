@@ -19,6 +19,8 @@ export function Footer() {
           </Link>
           <a
             href="https://www.caa.co.uk/data-and-analysis/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hover:text-ink"
           >
             CAA data &amp; analysis ↗

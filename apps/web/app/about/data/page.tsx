@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import Link from "next/link";
 
 export const metadata: Metadata = { title: "Methodology & data sources" };
 
@@ -97,9 +98,13 @@ export default function MethodologyPage() {
             unresolved names are excluded rather than guessed.
           </li>
           <li>
-            Historical depth is intentionally limited at launch (five years of
-            monthly airport/punctuality data, three years of airline data) — see
-            the build roadmap.
+            Historical depth is intentionally limited at launch — a handful of
+            recent months per dataset — and is expanded incrementally as further
+            CAA releases are imported. See the{" "}
+            <Link href="/status" className="underline hover:text-ink">
+              status page
+            </Link>{" "}
+            for exactly which periods are currently loaded.
           </li>
         </ul>
       </Section>

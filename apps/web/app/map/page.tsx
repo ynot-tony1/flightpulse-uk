@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import { WorldRouteMap } from "@/components/map/map-loader";
+import { getLatestRoutePeriod } from "@/lib/data/routes";
 
 export const metadata: Metadata = { title: "Route map" };
+export const dynamic = "force-dynamic";
 
-export default function MapPage() {
+export default async function MapPage() {
+  const period = await getLatestRoutePeriod();
+  const initial = period.status === "ok" && period.data ? period.data : null;
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-2 border-b border-border pb-8">
@@ -15,7 +20,10 @@ export default function MapPage() {
         </p>
       </div>
       <div className="py-8">
-        <WorldRouteMap />
+        <WorldRouteMap
+          initialYear={initial?.year}
+          initialMonth={initial?.month}
+        />
       </div>
     </div>
   );

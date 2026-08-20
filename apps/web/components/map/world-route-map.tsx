@@ -26,14 +26,20 @@ function radiusFor(value: number | null, max: number): number {
   return 4000 + Math.sqrt(value / max) * 26000;
 }
 
-export function WorldRouteMap() {
+export function WorldRouteMap({
+  initialYear,
+  initialMonth,
+}: {
+  initialYear?: number;
+  initialMonth?: number;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const overlayRef = useRef<MapboxOverlay | null>(null);
 
   const now = new Date();
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [year, setYear] = useState(initialYear ?? now.getFullYear());
+  const [month, setMonth] = useState(initialMonth ?? now.getMonth() + 1);
   const [mode, setMode] = useState<MapMode>("AIRPORT_TRAFFIC");
   const [routeCount, setRouteCount] = useState(25);
   const [selectedAirport, setSelectedAirport] = useState<string | null>(null);

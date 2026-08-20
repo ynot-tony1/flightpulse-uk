@@ -1,6 +1,7 @@
 import { listAirports } from "@/lib/data/airports";
 import { DatabasePendingNotice } from "@/components/ui/database-pending-notice";
 import { Card } from "@/components/ui/card";
+import { formatCompactNumber } from "@flightpulse/shared";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -108,6 +109,22 @@ export default async function AirportsPage({
                 <p className="text-sm text-ink-muted">
                   {airport.iataCode ?? "—"} · {airport.icaoCode ?? "—"}
                 </p>
+                <div className="mt-3 flex items-center justify-between border-t border-border pt-3 text-sm">
+                  <span className="text-ink-muted">Passengers</span>
+                  <span className="tabular-nums font-medium text-ink">
+                    {airport.latestMonthlyPassengers != null
+                      ? formatCompactNumber(airport.latestMonthlyPassengers)
+                      : "—"}
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center justify-between text-sm">
+                  <span className="text-ink-muted">Movements</span>
+                  <span className="tabular-nums font-medium text-ink">
+                    {airport.latestMonthlyMovements != null
+                      ? formatCompactNumber(airport.latestMonthlyMovements)
+                      : "—"}
+                  </span>
+                </div>
               </Card>
             </Link>
           ))}

@@ -361,6 +361,16 @@ def _report_run(result: AdapterRunResult) -> None:
 def _persist_or_warn(result: AdapterRunResult, settings: IngestorSettings) -> None:
     from flightpulse_ingestor.commands import persist
 
+    if not result.discovered_links:
+        # Nothing found for this period — CAA hasn't published it yet.
+        # Writing no release row (rather than a misleading
+        # status="imported", rows_imported=0 one) keeps
+        # "latest imported period" lookups honest for the scheduled
+        # monthly cron, which requests the current period unconditionally
+        # and will often run before CAA has actually published it.
+        typer.echo("Nothing discovered for this period — skipping persist (no release recorded).")
+        return
+
     try:
         with connect(settings) as conn:
             if result.dataset_code == "caa_airport_statistics":

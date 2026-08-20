@@ -4,7 +4,7 @@ export function LoadingSkeleton({ className }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={cn("animate-pulse rounded-md bg-paper-subtle", className)}
+      className={cn("animate-pulse  bg-paper-subtle", className)}
     />
   );
 }

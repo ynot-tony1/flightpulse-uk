@@ -1,107 +1,100 @@
 @import "tailwindcss";
 
 /*
- * FlightPulse UK design tokens.
- * Aviation-inspired but restrained: ink/paper neutrals, one confident sky
- * blue for identity, amber reserved for delay/warning signal, emerald for
- * on-time/positive signal. No neon, no radar/glassmorphism cliches.
+ * FlightPulse UK design tokens — editorial data-journalism direction.
+ * Warm cream paper, serif headlines, a single confident brick-red accent
+ * (never a "SaaS blue"), no card shadows or rounded corners — rules and
+ * borders do the separating work instead.
  */
 :root {
-  --color-paper: #ffffff;
-  --color-paper-subtle: #f6f7f9;
-  --color-paper-raised: #ffffff;
-  --color-ink: #0c1420;
-  --color-ink-muted: #445064;
-  --color-ink-faint: #7c8798;
-  --color-border: #e2e6ec;
-  --color-border-strong: #cbd2dd;
+  --color-paper: #faf6ec;
+  --color-paper-subtle: #f2ead8;
+  --color-paper-raised: #fffdf7;
+  --color-ink: #211c15;
+  --color-ink-muted: #5c5346;
+  --color-ink-faint: #8c8272;
+  --color-border: #e3d9c2;
+  --color-border-strong: #cabf9e;
 
-  --color-sky-50: #eef6ff;
-  --color-sky-100: #d9ecff;
-  --color-sky-400: #3f8cd8;
-  --color-sky-500: #1f6fb8;
-  --color-sky-600: #15588f;
-  --color-sky-700: #0f4470;
+  --color-accent-50: #fbede6;
+  --color-accent-100: #f2d5c5;
+  --color-accent-400: #bf5137;
+  --color-accent-500: #a8402c;
+  --color-accent-600: #833021;
+  --color-accent-700: #632419;
 
-  --color-amber-100: #fdf1d6;
-  --color-amber-500: #c8871a;
-  --color-amber-600: #9c6a13;
+  --color-amber-100: #f3e1b8;
+  --color-amber-500: #a8791a;
+  --color-amber-600: #7f5b12;
 
-  --color-emerald-100: #dcf3e8;
-  --color-emerald-500: #1c8a5c;
-  --color-emerald-600: #146c47;
+  --color-emerald-100: #dbe6cd;
+  --color-emerald-500: #4c7a3c;
+  --color-emerald-600: #395c2c;
 
-  --color-rose-100: #fbe3e3;
-  --color-rose-500: #c23d3d;
-  --color-rose-600: #9c2f2f;
-
-  --shadow-card:
-    0 1px 2px rgba(12, 20, 32, 0.04), 0 1px 12px rgba(12, 20, 32, 0.05);
+  --color-rose-100: #ecdade;
+  --color-rose-500: #9c2b44;
+  --color-rose-600: #7a2036;
 }
 
 :root[data-theme="dark"] {
-  --color-paper: #0a0f18;
-  --color-paper-subtle: #0f1622;
-  --color-paper-raised: #121a28;
-  --color-ink: #eef1f6;
-  --color-ink-muted: #aab4c4;
-  --color-ink-faint: #6d7889;
-  --color-border: #202a3a;
-  --color-border-strong: #2c384c;
+  --color-paper: #17130e;
+  --color-paper-subtle: #1e1811;
+  --color-paper-raised: #221b13;
+  --color-ink: #f3ecdc;
+  --color-ink-muted: #c4b8a2;
+  --color-ink-faint: #8f8371;
+  --color-border: #362c1f;
+  --color-border-strong: #4a3c2a;
 
-  --color-sky-50: #0f2438;
-  --color-sky-100: #123152;
-  --color-sky-400: #6bb3ee;
-  --color-sky-500: #4d9de0;
-  --color-sky-600: #7cc0f4;
-  --color-sky-700: #a9d8fa;
+  --color-accent-50: #2a1610;
+  --color-accent-100: #3c1f16;
+  --color-accent-400: #e38a6c;
+  --color-accent-500: #dd7550;
+  --color-accent-600: #e8926f;
+  --color-accent-700: #f0ac8e;
 
-  --color-amber-100: #2e2411;
-  --color-amber-500: #e0ac4c;
-  --color-amber-600: #f0c778;
+  --color-amber-100: #332711;
+  --color-amber-500: #d9a44c;
+  --color-amber-600: #eabd73;
 
-  --color-emerald-100: #10281d;
-  --color-emerald-500: #3fb583;
-  --color-emerald-600: #63cc9d;
+  --color-emerald-100: #1e2a16;
+  --color-emerald-500: #7fae68;
+  --color-emerald-600: #98c382;
 
-  --color-rose-100: #2c1414;
-  --color-rose-500: #e07070;
-  --color-rose-600: #ee8c8c;
-
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 16px rgba(0, 0, 0, 0.35);
+  --color-rose-100: #2c1620;
+  --color-rose-500: #c97088;
+  --color-rose-600: #da8ca1;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-paper: #0a0f18;
-    --color-paper-subtle: #0f1622;
-    --color-paper-raised: #121a28;
-    --color-ink: #eef1f6;
-    --color-ink-muted: #aab4c4;
-    --color-ink-faint: #6d7889;
-    --color-border: #202a3a;
-    --color-border-strong: #2c384c;
+    --color-paper: #17130e;
+    --color-paper-subtle: #1e1811;
+    --color-paper-raised: #221b13;
+    --color-ink: #f3ecdc;
+    --color-ink-muted: #c4b8a2;
+    --color-ink-faint: #8f8371;
+    --color-border: #362c1f;
+    --color-border-strong: #4a3c2a;
 
-    --color-sky-50: #0f2438;
-    --color-sky-100: #123152;
-    --color-sky-400: #6bb3ee;
-    --color-sky-500: #4d9de0;
-    --color-sky-600: #7cc0f4;
-    --color-sky-700: #a9d8fa;
+    --color-accent-50: #2a1610;
+    --color-accent-100: #3c1f16;
+    --color-accent-400: #e38a6c;
+    --color-accent-500: #dd7550;
+    --color-accent-600: #e8926f;
+    --color-accent-700: #f0ac8e;
 
-    --color-amber-100: #2e2411;
-    --color-amber-500: #e0ac4c;
-    --color-amber-600: #f0c778;
+    --color-amber-100: #332711;
+    --color-amber-500: #d9a44c;
+    --color-amber-600: #eabd73;
 
-    --color-emerald-100: #10281d;
-    --color-emerald-500: #3fb583;
-    --color-emerald-600: #63cc9d;
+    --color-emerald-100: #1e2a16;
+    --color-emerald-500: #7fae68;
+    --color-emerald-600: #98c382;
 
-    --color-rose-100: #2c1414;
-    --color-rose-500: #e07070;
-    --color-rose-600: #ee8c8c;
-
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 16px rgba(0, 0, 0, 0.35);
+    --color-rose-100: #2c1620;
+    --color-rose-500: #c97088;
+    --color-rose-600: #da8ca1;
   }
 }
 
@@ -115,12 +108,12 @@
   --color-border: var(--color-border);
   --color-border-strong: var(--color-border-strong);
 
-  --color-sky-50: var(--color-sky-50);
-  --color-sky-100: var(--color-sky-100);
-  --color-sky-400: var(--color-sky-400);
-  --color-sky-500: var(--color-sky-500);
-  --color-sky-600: var(--color-sky-600);
-  --color-sky-700: var(--color-sky-700);
+  --color-accent-50: var(--color-accent-50);
+  --color-accent-100: var(--color-accent-100);
+  --color-accent-400: var(--color-accent-400);
+  --color-accent-500: var(--color-accent-500);
+  --color-accent-600: var(--color-accent-600);
+  --color-accent-700: var(--color-accent-700);
 
   --color-amber-100: var(--color-amber-100);
   --color-amber-500: var(--color-amber-500);
@@ -134,8 +127,9 @@
   --color-rose-500: var(--color-rose-500);
   --color-rose-600: var(--color-rose-600);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-public-sans);
+  --font-serif: var(--font-source-serif);
+  --font-mono: var(--font-plex-mono);
 }
 
 * {
@@ -165,4 +159,34 @@ body {
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* MapLibre default controls reskinned to match the editorial UI chrome. */
+.maplibregl-ctrl-group {
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  box-shadow: none;
+}
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--color-border);
+}
+.maplibregl-ctrl-group button:hover {
+  background: var(--color-paper-subtle);
+}
+.maplibregl-ctrl-attrib {
+  background: transparent !important;
+  color: var(--color-ink-faint) !important;
+  font-size: 10px !important;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--color-ink-muted) !important;
+}
+:root[data-theme="dark"] .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .maplibregl-ctrl-icon {
+    filter: invert(1);
+  }
 }

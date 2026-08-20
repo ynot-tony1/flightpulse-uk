@@ -19,14 +19,14 @@ export function Nav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
+    <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="shrink-0">
           <Logo />
         </Link>
 
         <nav aria-label="Primary" className="hidden lg:block">
-          <ul className="flex items-center gap-1">
+          <ul className="flex items-center gap-6">
             {NAV_ITEMS.map((item) => {
               const active = isActive(pathname, item.href);
               return (
@@ -35,10 +35,10 @@ export function Nav() {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                      "border-b-2 py-1 text-xs font-medium uppercase tracking-wider transition-colors",
                       active
-                        ? "bg-sky-50 text-sky-600"
-                        : "text-ink-muted hover:bg-paper-subtle hover:text-ink",
+                        ? "border-accent-500 text-ink"
+                        : "border-transparent text-ink-muted hover:border-border-strong hover:text-ink",
                     )}
                   >
                     {item.label}
@@ -55,7 +55,7 @@ export function Nav() {
           </div>
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-ink-muted lg:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center border border-border text-ink-muted lg:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             aria-controls="mobile-nav"
@@ -82,10 +82,10 @@ export function Nav() {
                     aria-current={active ? "page" : undefined}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "block rounded-md px-3 py-2 text-sm font-medium",
+                      "block border-l-2 px-3 py-2 text-sm font-medium uppercase tracking-wider",
                       active
-                        ? "bg-sky-50 text-sky-600"
-                        : "text-ink-muted hover:bg-paper-subtle hover:text-ink",
+                        ? "border-accent-500 text-ink"
+                        : "border-transparent text-ink-muted hover:border-border-strong hover:text-ink",
                     )}
                   >
                     {item.label}

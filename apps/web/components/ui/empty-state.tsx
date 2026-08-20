@@ -12,7 +12,7 @@ export function EmptyState({
   return (
     <div
       role="status"
-      className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border-strong px-6 py-12 text-center"
+      className="flex flex-col items-center justify-center gap-2 border border-dashed border-border-strong px-6 py-12 text-center"
     >
       <p className="text-sm font-medium text-ink">{title}</p>
       {description && (

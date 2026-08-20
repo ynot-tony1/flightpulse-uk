@@ -31,7 +31,9 @@ export default async function RoutesPage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-2 border-b border-border pb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Routes</h1>
+        <h1 className="font-serif text-4xl font-medium tracking-tight">
+          Routes
+        </h1>
         <p className="max-w-2xl text-ink-muted">
           Search any UK airport pair — e.g. Manchester → Amsterdam, Heathrow →
           New York JFK — for passenger volume, seasonality and punctuality where
@@ -52,7 +54,7 @@ export default async function RoutesPage({
             name="origin"
             defaultValue={params.origin}
             placeholder="e.g. MAN"
-            className="w-40 rounded-md border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-sky-500"
+            className="w-40 border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-accent-500"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -67,12 +69,12 @@ export default async function RoutesPage({
             name="destination"
             defaultValue={params.destination}
             placeholder="e.g. AMS"
-            className="w-40 rounded-md border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-sky-500"
+            className="w-40 border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-accent-500"
           />
         </div>
         <button
           type="submit"
-          className="rounded-md bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600"
+          className="bg-ink px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-paper transition-colors hover:bg-accent-600"
         >
           Search route
         </button>
@@ -108,7 +110,7 @@ export default async function RoutesPage({
                       <td className="px-4 py-3 font-medium text-ink">
                         <Link
                           href={`/routes/${rm.route.originAirport.canonicalCode}/${rm.route.destinationAirport.canonicalCode}`}
-                          className="hover:text-sky-500"
+                          className="hover:text-accent-500"
                         >
                           {rm.route.originAirport.displayName} →{" "}
                           {rm.route.destinationAirport.displayName}

@@ -4,10 +4,7 @@ import type { HTMLAttributes } from "react";
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        "rounded-lg border border-border bg-paper-raised [box-shadow:var(--shadow-card)]",
-        className,
-      )}
+      className={cn("border border-border bg-paper-raised", className)}
       {...props}
     />
   );

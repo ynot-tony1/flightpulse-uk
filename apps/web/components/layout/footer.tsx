@@ -10,18 +10,18 @@ export function Footer() {
           Aviation statistics: Source: UK Civil Aviation Authority. Airport
           geographic reference data: OurAirports (public domain).
         </p>
-        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-          <Link href="/about/data" className="hover:text-ink">
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs uppercase tracking-wider">
+          <Link href="/about/data" className="hover:text-accent-500">
             Methodology &amp; data sources
           </Link>
-          <Link href="/status" className="hover:text-ink">
+          <Link href="/status" className="hover:text-accent-500">
             System status
           </Link>
           <a
             href="https://www.caa.co.uk/data-and-analysis/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-ink"
+            className="hover:text-accent-500"
           >
             CAA data &amp; analysis ↗
           </a>

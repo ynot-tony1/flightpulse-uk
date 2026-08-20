@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 import type { HTMLAttributes } from "react";
 
-type BadgeTone = "neutral" | "sky" | "amber" | "emerald" | "rose";
+type BadgeTone = "neutral" | "accent" | "amber" | "emerald" | "rose";
 
 const TONE_CLASSES: Record<BadgeTone, string> = {
   neutral: "bg-paper-subtle text-ink-muted border-border",
-  sky: "bg-sky-50 text-sky-600 border-sky-100",
+  accent: "bg-accent-50 text-accent-600 border-accent-100",
   amber: "bg-amber-100 text-amber-600 border-amber-100",
   emerald: "bg-emerald-100 text-emerald-600 border-emerald-100",
   rose: "bg-rose-100 text-rose-600 border-rose-100",

@@ -55,7 +55,7 @@ export default async function ComparePage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-2 border-b border-border pb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">
+        <h1 className="font-serif text-4xl font-medium tracking-tight">
           Compare airports
         </h1>
         <p className="max-w-2xl text-ink-muted">
@@ -79,12 +79,12 @@ export default async function ComparePage({
             name="airports"
             defaultValue={params.airports ?? "LHR,MAN,EDI"}
             placeholder="e.g. LHR,MAN,EDI"
-            className="w-72 rounded-md border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-sky-500"
+            className="w-72 border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-accent-500"
           />
         </div>
         <button
           type="submit"
-          className="rounded-md bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600"
+          className="bg-ink px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-paper transition-colors hover:bg-accent-600"
         >
           Compare
         </button>

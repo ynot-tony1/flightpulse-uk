@@ -56,13 +56,15 @@ export function MapFilterBar({
   onRouteCountChange: (count: number) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-paper-raised p-3">
+    <div className="flex flex-wrap items-center gap-3 border-2 border-ink bg-paper-raised p-3">
       <label className="flex items-center gap-2 text-sm">
-        <span className="text-ink-muted">Mode</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
+          Mode
+        </span>
         <select
           value={mode}
           onChange={(e) => onModeChange(e.target.value as MapMode)}
-          className="rounded-md border border-border bg-paper px-2 py-1.5 text-sm outline-none focus:border-sky-500"
+          className="border border-border bg-paper px-2 py-1.5 text-sm outline-none focus:border-accent-500"
         >
           {Object.entries(MODE_LABELS).map(([value, label]) => (
             <option key={value} value={value}>
@@ -73,11 +75,13 @@ export function MapFilterBar({
       </label>
 
       <label className="flex items-center gap-2 text-sm">
-        <span className="text-ink-muted">Period</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
+          Period
+        </span>
         <select
           value={month}
           onChange={(e) => onMonthChange(Number(e.target.value))}
-          className="rounded-md border border-border bg-paper px-2 py-1.5 text-sm outline-none focus:border-sky-500"
+          className="border border-border bg-paper px-2 py-1.5 text-sm outline-none focus:border-accent-500"
         >
           {MONTHS.map((m, i) => (
             <option key={m} value={i + 1}>
@@ -89,16 +93,18 @@ export function MapFilterBar({
           type="number"
           value={year}
           onChange={(e) => onYearChange(Number(e.target.value))}
-          className="w-20 rounded-md border border-border bg-paper px-2 py-1.5 text-sm outline-none focus:border-sky-500"
+          className="w-20 border border-border bg-paper px-2 py-1.5 text-sm outline-none focus:border-accent-500"
         />
       </label>
 
       <label className="flex items-center gap-2 text-sm">
-        <span className="text-ink-muted">Routes shown</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
+          Routes shown
+        </span>
         <select
           value={routeCount}
           onChange={(e) => onRouteCountChange(Number(e.target.value))}
-          className="rounded-md border border-border bg-paper px-2 py-1.5 text-sm outline-none focus:border-sky-500"
+          className="border border-border bg-paper px-2 py-1.5 text-sm outline-none focus:border-accent-500"
         >
           {[10, 25, 50, 100].map((n) => (
             <option key={n} value={n}>

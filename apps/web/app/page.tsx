@@ -45,12 +45,12 @@ export default async function HomePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <section className="flex flex-col gap-4 border-b border-border pb-10">
-        <Badge tone="sky">
+        <Badge tone="accent">
           {period
             ? `Latest period: ${formatMonthYear(period.year, period.month)}`
             : "Awaiting first CAA import"}
         </Badge>
-        <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+        <h1 className="max-w-3xl font-serif text-5xl font-medium tracking-tight text-ink sm:text-6xl">
           UK aviation, measured from official statistics.
         </h1>
         <p className="max-w-2xl text-lg text-ink-muted">
@@ -61,13 +61,13 @@ export default async function HomePage() {
         <div className="flex flex-wrap gap-3 pt-2">
           <Link
             href="/map"
-            className="rounded-md bg-sky-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-600"
+            className="bg-ink px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-paper transition-colors hover:bg-accent-600"
           >
             Explore the route map
           </Link>
           <Link
             href="/airports"
-            className="rounded-md border border-border px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-paper-subtle"
+            className=" border border-border px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-paper-subtle"
           >
             Browse airports
           </Link>

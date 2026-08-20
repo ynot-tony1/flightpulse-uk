@@ -11,11 +11,15 @@ export function MapSidePanel({
   onClose: () => void;
 }) {
   return (
-    <div className="absolute right-3 top-3 w-64 rounded-lg border border-border bg-paper-raised p-4 shadow-lg">
+    <div className="absolute right-3 top-3 w-64 border-2 border-ink bg-paper-raised p-4">
       <div className="flex items-start justify-between">
         <div>
-          <p className="font-semibold text-ink">{airport.name}</p>
-          <p className="text-sm text-ink-muted">{airport.code}</p>
+          <p className="font-serif text-lg font-medium text-ink">
+            {airport.name}
+          </p>
+          <p className="font-mono text-xs uppercase tracking-wider text-ink-muted">
+            {airport.code}
+          </p>
         </div>
         <button
           type="button"
@@ -26,14 +30,14 @@ export function MapSidePanel({
           <X size={16} />
         </button>
       </div>
-      <p className="mt-3 tabular-nums text-lg font-semibold text-ink">
+      <p className="mt-3 font-serif text-2xl font-medium tabular-nums text-ink">
         {airport.metricValue != null
           ? formatCompactNumber(airport.metricValue)
           : "—"}
       </p>
       <Link
         href={`/airports/${airport.code}`}
-        className="mt-3 inline-block text-sm text-sky-500 hover:underline"
+        className="mt-3 inline-block text-xs font-semibold uppercase tracking-wider text-accent-500 hover:underline"
       >
         View airport →
       </Link>

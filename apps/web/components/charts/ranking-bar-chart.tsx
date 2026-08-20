@@ -67,14 +67,14 @@ export function RankingBarChart({
             contentStyle={{
               background: "var(--color-paper-raised)",
               border: "1px solid var(--color-border)",
-              borderRadius: 8,
+              borderRadius: 0,
               fontSize: 12,
             }}
           />
           <Bar
             dataKey="value"
-            fill="var(--color-sky-500)"
-            radius={[0, 4, 4, 0]}
+            fill="var(--color-accent-500)"
+            radius={[0, 0, 0, 0]}
           />
         </BarChart>
       </ResponsiveContainer>

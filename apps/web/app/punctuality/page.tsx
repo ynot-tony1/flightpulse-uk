@@ -15,7 +15,9 @@ export default async function PunctualityPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-3 border-b border-border pb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Punctuality</h1>
+        <h1 className="font-serif text-4xl font-medium tracking-tight">
+          Punctuality
+        </h1>
         <p className="max-w-2xl text-ink-muted">
           Average delay and on-time performance by airport, route and airline,
           from official CAA punctuality statistics.
@@ -51,7 +53,7 @@ export default async function PunctualityPage() {
                       <td className="px-4 py-3 font-medium text-ink">
                         <Link
                           href={`/airports/${row.airport.canonicalCode}`}
-                          className="hover:text-sky-500"
+                          className="hover:text-accent-500"
                         >
                           {row.airport.displayName}
                         </Link>

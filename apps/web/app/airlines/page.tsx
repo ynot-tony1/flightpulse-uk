@@ -18,7 +18,9 @@ export default async function AirlinesPage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-2 border-b border-border pb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Airlines</h1>
+        <h1 className="font-serif text-4xl font-medium tracking-tight">
+          Airlines
+        </h1>
         <p className="max-w-2xl text-ink-muted">
           UK airline activity from official CAA airline statistics — scheduled
           and non-scheduled services, aircraft utilisation, and punctuality
@@ -31,7 +33,7 @@ export default async function AirlinesPage({
           name="q"
           defaultValue={params.q}
           placeholder="Search airlines"
-          className="w-72 rounded-md border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-sky-500"
+          className="w-72 border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-accent-500"
         />
       </form>
 
@@ -41,7 +43,7 @@ export default async function AirlinesPage({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {result.data.map((airline) => (
             <Link key={airline.id} href={`/airlines/${airline.id}`}>
-              <Card className="p-5 transition-shadow hover:shadow-md">
+              <Card className="p-5 transition-colors hover:border-border-strong">
                 <p className="font-semibold text-ink">
                   {airline.canonicalName}
                 </p>

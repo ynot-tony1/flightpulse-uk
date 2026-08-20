@@ -99,7 +99,7 @@ export default async function AirportDetailPage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="border-b border-border pb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">
+        <h1 className="font-serif text-4xl font-medium tracking-tight">
           {airport?.displayName ?? airportCode.toUpperCase()}
         </h1>
         <p className="mt-1 text-ink-muted">
@@ -196,7 +196,7 @@ export default async function AirportDetailPage({
       </section>
 
       <section className="pb-16">
-        <h2 className="mb-4 text-lg font-semibold text-ink">
+        <h2 className="mb-4 font-serif text-xl font-medium text-ink">
           Top destinations
         </h2>
         {destinations.status === "ok" && destinations.data.length > 0 ? (
@@ -224,7 +224,7 @@ export default async function AirportDetailPage({
                         <td className="px-4 py-3 font-medium text-ink">
                           <Link
                             href={`/routes/${rm.route.originAirport.canonicalCode}/${rm.route.destinationAirport.canonicalCode}`}
-                            className="hover:text-sky-500"
+                            className="hover:text-accent-500"
                           >
                             {other.displayName}
                           </Link>

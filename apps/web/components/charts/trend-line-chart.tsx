@@ -57,14 +57,14 @@ export function TrendLineChart({
             contentStyle={{
               background: "var(--color-paper-raised)",
               border: "1px solid var(--color-border)",
-              borderRadius: 8,
+              borderRadius: 0,
               fontSize: 12,
             }}
           />
           <Line
             type="monotone"
             dataKey="value"
-            stroke="var(--color-sky-500)"
+            stroke="var(--color-accent-500)"
             strokeWidth={2}
             dot={false}
           />

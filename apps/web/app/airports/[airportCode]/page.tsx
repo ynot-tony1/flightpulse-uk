@@ -17,6 +17,7 @@ import {
   formatCompactNumber,
   formatMonthYear,
   formatPercentage,
+  monthlyAverages,
 } from "@flightpulse/shared";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -95,6 +96,24 @@ export default async function AirportDetailPage({
     passengerMetrics.status === "ok" && passengerMetrics.data.length >= 12
       ? passengerMetrics.data.slice(0, 12).reduce((sum, m) => sum + m.value, 0)
       : null;
+  const seasonalPoints =
+    passengerMetrics.status === "ok"
+      ? monthlyAverages(passengerMetrics.data)
+      : [];
+  const seasonalReady = seasonalPoints.some((p) => p.occurrences >= 2);
+  const importedMonthCount =
+    passengerMetrics.status === "ok" ? passengerMetrics.data.length : 0;
+  const importedSpan =
+    passengerMetrics.status === "ok" && passengerMetrics.data.length > 0
+      ? (() => {
+          const sorted = [...passengerMetrics.data].sort(
+            (a, b) => a.year * 12 + a.month - (b.year * 12 + b.month),
+          );
+          const first = sorted[0];
+          const last = sorted[sorted.length - 1];
+          return `${MONTH_ABBR[first.month - 1]} ${first.year}–${MONTH_ABBR[last.month - 1]} ${last.year}`;
+        })()
+      : null;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -151,12 +170,22 @@ export default async function AirportDetailPage({
         </ChartCard>
         <ChartCard
           title="Seasonal pattern"
-          description="Average passengers by month."
+          description="Average passengers by calendar month, across every imported year."
         >
-          <EmptyState
-            title="Not enough history yet"
-            description="Seasonality needs at least 12 months of imported data to compute a meaningful monthly average."
-          />
+          {seasonalReady ? (
+            <TrendLineChart
+              data={seasonalPoints.map((p) => ({
+                label: MONTH_ABBR[p.month - 1],
+                value: p.average,
+              }))}
+              valueLabel="Average passengers"
+            />
+          ) : (
+            <EmptyState
+              title="Not enough history yet"
+              description={`Every calendar month needs to occur at least twice in the imported data to average anything — right now ${importedMonthCount} consecutive month${importedMonthCount === 1 ? "" : "s"} imported${importedSpan ? ` (${importedSpan})` : ""} means every month is still unique. This resolves automatically once the data spans past a year.`}
+            />
+          )}
         </ChartCard>
       </section>
 

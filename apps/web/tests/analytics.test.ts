@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   aggregateOnTimePercentage,
+  hasRepeatedCalendarMonth,
+  monthlyAverages,
   percentageChange,
   rollingTwelveMonthSum,
   rollingTwelveMonths,
@@ -115,5 +117,47 @@ describe("seasonalProfile", () => {
     const profile = seasonalProfile([{ year: 2024, month: 1, value: 10 }]);
     const july = profile.find((p) => p.month === 7)!;
     expect(july.averageShareOfYear).toBe(0);
+  });
+});
+
+describe("monthlyAverages", () => {
+  it("averages a repeated calendar month across years", () => {
+    const points = [
+      { year: 2024, month: 6, value: 100 },
+      { year: 2025, month: 6, value: 140 },
+      { year: 2025, month: 7, value: 50 },
+    ];
+    const result = monthlyAverages(points);
+    const june = result.find((p) => p.month === 6)!;
+    expect(june.average).toBeCloseTo(120);
+    expect(june.occurrences).toBe(2);
+    const july = result.find((p) => p.month === 7)!;
+    expect(july.average).toBeCloseTo(50);
+    expect(july.occurrences).toBe(1);
+  });
+
+  it("omits calendar months with no data at all", () => {
+    const result = monthlyAverages([{ year: 2025, month: 3, value: 10 }]);
+    expect(result.map((p) => p.month)).toEqual([3]);
+  });
+});
+
+describe("hasRepeatedCalendarMonth", () => {
+  it("is false for a run of consecutive months spanning a year boundary", () => {
+    // e.g. Aug 2025 - Jun 2026 — 11 consecutive months, no repeats.
+    const points = Array.from({ length: 11 }, (_, i) => {
+      const month = ((7 + i) % 12) + 1;
+      const year = 7 + i < 12 ? 2025 : 2026;
+      return { year, month, value: 1 };
+    });
+    expect(hasRepeatedCalendarMonth(points)).toBe(false);
+  });
+
+  it("is true once any calendar month occurs twice", () => {
+    const points = [
+      { year: 2025, month: 8, value: 1 },
+      { year: 2026, month: 8, value: 1 },
+    ];
+    expect(hasRepeatedCalendarMonth(points)).toBe(true);
   });
 });

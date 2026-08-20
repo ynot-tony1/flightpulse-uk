@@ -13,6 +13,7 @@ import {
   formatPercentage,
   formatSignedPercentage,
   greatCircleDistanceKm,
+  monthlyAverages,
   percentageChange,
 } from "@flightpulse/shared";
 import { notFound } from "next/navigation";
@@ -63,6 +64,23 @@ export default async function RouteDetailPage({
   const change =
     latest?.passengers != null && previous?.passengers != null
       ? percentageChange(previous.passengers, latest.passengers)
+      : null;
+  const routePointsWithPassengers = (route?.monthlyMetrics ?? [])
+    .filter((m): m is typeof m & { passengers: number } => m.passengers != null)
+    .map((m) => ({ year: m.year, month: m.month, value: m.passengers }));
+  const seasonalPoints = monthlyAverages(routePointsWithPassengers);
+  const seasonalReady = seasonalPoints.some((p) => p.occurrences >= 2);
+  const importedMonthCount = routePointsWithPassengers.length;
+  const importedSpan =
+    routePointsWithPassengers.length > 0
+      ? (() => {
+          const sorted = [...routePointsWithPassengers].sort(
+            (a, b) => a.year * 12 + a.month - (b.year * 12 + b.month),
+          );
+          const first = sorted[0];
+          const last = sorted[sorted.length - 1];
+          return `${MONTH_ABBR[first.month - 1]} ${first.year}–${MONTH_ABBR[last.month - 1]} ${last.year}`;
+        })()
       : null;
   const peak = route?.monthlyMetrics.length
     ? [...route.monthlyMetrics].sort(
@@ -178,11 +196,24 @@ export default async function RouteDetailPage({
             <DatabasePendingNotice subject="This chart" />
           )}
         </ChartCard>
-        <ChartCard title="Seasonality">
-          <EmptyState
-            title="Not enough history yet"
-            description="Seasonality needs at least 12 months of imported data to compute a meaningful monthly average."
-          />
+        <ChartCard
+          title="Seasonality"
+          description="Average passengers by calendar month, across every imported year."
+        >
+          {seasonalReady ? (
+            <TrendLineChart
+              data={seasonalPoints.map((p) => ({
+                label: MONTH_ABBR[p.month - 1],
+                value: p.average,
+              }))}
+              valueLabel="Average passengers"
+            />
+          ) : (
+            <EmptyState
+              title="Not enough history yet"
+              description={`Every calendar month needs to occur at least twice in the imported data to average anything — right now ${importedMonthCount} consecutive month${importedMonthCount === 1 ? "" : "s"} imported${importedSpan ? ` (${importedSpan})` : ""} means every month is still unique. This resolves automatically once the data spans past a year.`}
+            />
+          )}
         </ChartCard>
         <ChartCard
           title="Punctuality history"

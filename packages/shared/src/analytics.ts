@@ -137,3 +137,47 @@ export function seasonalProfile(
     return { month, averageShareOfYear };
   });
 }
+
+export interface MonthlyAveragePoint {
+  month: number; // 1-12
+  average: number;
+  occurrences: number;
+}
+
+/**
+ * Average value per calendar month across however many years of data are
+ * available. Unlike seasonalProfile, this does not require complete
+ * calendar years, so it starts producing a genuine average as soon as any
+ * calendar month has occurred more than once — a much lower bar than a
+ * fixed "N months imported" threshold, since consecutive monthly backfill
+ * data can span a year boundary (e.g. Aug-Dec of one year plus Jan-Jun of
+ * the next) without a single calendar month repeating, in which case no
+ * amount of "more consecutive months" produces a meaningful average until
+ * the span actually wraps past 12 months.
+ *
+ * Callers must treat a result where every occurrences === 1 as "not yet
+ * meaningful" — it is a re-labelling of the raw trend, not an average of
+ * anything. See hasRepeatedCalendarMonth.
+ */
+export function monthlyAverages(points: MonthlyPoint[]): MonthlyAveragePoint[] {
+  const byMonth = new Map<number, number[]>();
+  for (const p of points) {
+    const arr = byMonth.get(p.month) ?? [];
+    arr.push(p.value);
+    byMonth.set(p.month, arr);
+  }
+  return Array.from({ length: 12 }, (_, i) => i + 1)
+    .filter((month) => byMonth.has(month))
+    .map((month) => {
+      const values = byMonth.get(month) as number[];
+      return {
+        month,
+        average: values.reduce((a, b) => a + b, 0) / values.length,
+        occurrences: values.length,
+      };
+    });
+}
+
+export function hasRepeatedCalendarMonth(points: MonthlyPoint[]): boolean {
+  return monthlyAverages(points).some((m) => m.occurrences >= 2);
+}
